@@ -26,7 +26,8 @@ export function ProductRating({ rating, count, className, size = "sm" }: { ratin
       <Stars rating={rating} className={size === "md" ? "size-4" : undefined} />
       {count !== undefined && (
         <span className="text-muted-foreground">
-          ({count} {count === 1 ? "review" : "reviews"})
+          ({count}
+          <span className={size === "md" ? "" : "hidden sm:inline"}> {count === 1 ? "review" : "reviews"}</span>)
         </span>
       )}
     </span>

@@ -28,7 +28,7 @@ export function deliveryLine(o: Order, status = orderStatus(o)) {
     case "Delivered":
       return `Delivered ${formatDay(deliveredOn(o))}`;
     case "Out for delivery":
-      return "Out for delivery. Arriving today.";
+      return "Arriving today";
     default:
       return `Arriving ${formatWindow(w)}`;
   }

@@ -122,8 +122,13 @@ export function related(p: Product, n = 6) {
 }
 
 export function trending(n = 8) {
-  // Well rated and in stock: a sane stand-in for "popular" without fake sales numbers.
-  return [...products].filter((p) => p.stock > 0).sort((a, b) => b.rating - a.rating || a.price - b.price).slice(0, n);
+  // Best rated in-stock item from each department in turn: a sane stand-in for
+  // "popular" without fake sales numbers, and not a wall of groceries (which rate highest).
+  const order = ["electronics", "accessories", "fashion", "beauty", "home", "sports", "pantry"];
+  const best = order.map((d) => products.filter((p) => p.category === d && p.stock > 0).sort((a, b) => b.rating - a.rating || b.price - a.price));
+  const out: Product[] = [];
+  for (let i = 0; out.length < n && i < 50; i++) for (const list of best) if (list[i] && out.length < n) out.push(list[i]);
+  return out;
 }
 
 export function deals(n = 8) {

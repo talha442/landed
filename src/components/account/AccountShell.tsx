@@ -52,7 +52,7 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
       <p className="text-sm text-muted-foreground">Your account</p>
       <h1 className="text-3xl font-extrabold">Hi, {user.name.split(" ")[0]}</h1>
       <div className="mt-6 grid gap-8 md:grid-cols-[220px_1fr]">
-        <nav aria-label="Account" className="-mx-4 overflow-x-auto px-4 [scrollbar-width:none] md:mx-0 md:px-0">
+        <nav aria-label="Account" className="-mx-4 overflow-x-auto px-4 [scrollbar-width:none] md:mx-0 md:overflow-visible md:px-0">
           <ul className="flex gap-1.5 md:sticky md:top-32 md:flex-col">
             {NAV.map(({ href, label, icon: Icon }) => (
               <li key={href}>

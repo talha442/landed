@@ -45,7 +45,7 @@ export function CardPrice({ price, originalPrice, discount }: { price: number; o
         {was && <span className="text-xs text-muted-foreground line-through tabular">{money(was, dest)}</span>}
         {discount && <span className="rounded-md bg-sale/10 px-1.5 py-0.5 text-[11px] font-bold text-sale">-{discount}%</span>}
       </div>
-      <p className="mt-0.5 text-xs text-brand">{fees > 0 ? "Delivered price · fees included" : "Delivered price · free shipping"}</p>
+      <p className="mt-0.5 text-xs text-brand">{fees > 0 ? (dest.code === "US" ? "Incl. shipping & tax" : "Incl. shipping & import") : "Free delivery"}</p>
     </div>
   );
 }

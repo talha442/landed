@@ -45,7 +45,7 @@ export function CategoryGrid({ items }: { items: { dept: Department; image: stri
           <Link
             key={dept.slug}
             href={`/search?category=${dept.slug}`}
-            className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border bg-card p-4 transition-shadow hover:shadow-lg hover:shadow-black/5 ${i === 0 ? "sm:col-span-2 sm:row-span-2" : ""}`}
+            className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border bg-card p-4 transition-shadow hover:shadow-lg hover:shadow-black/5 ${i === 0 ? "col-span-2 sm:row-span-2" : ""}`}
           >
             <div className="relative z-10">
               <p className="font-heading text-base font-bold sm:text-lg">{dept.name}</p>
@@ -60,7 +60,7 @@ export function CategoryGrid({ items }: { items: { dept: Department; image: stri
             />
           </Link>
         ))}
-        <Link href="/search?sort=discount" className="flex flex-col justify-between rounded-2xl bg-foreground p-4 text-background transition-opacity hover:opacity-90">
+        <Link href="/search?sort=discount" className="col-span-2 flex min-h-36 flex-col justify-between rounded-2xl bg-foreground p-5 text-background transition-opacity hover:opacity-90">
           <p className="font-heading text-base font-bold sm:text-lg">Deals</p>
           <p className="text-sm text-background/70">Up to 20% off, delivered prices included.</p>
           <ArrowRight className="size-5" />

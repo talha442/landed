@@ -32,7 +32,6 @@ export function ProductCard({ p, priority = false, showCompare = true }: { p: Pr
           loading={priority ? "eager" : "lazy"}
           className={cn("size-full object-contain p-5 mix-blend-multiply transition-transform duration-300 group-hover:scale-[1.04]", outOfStock && "opacity-50")}
         />
-        {p.discount && <span className="absolute top-3 left-3 rounded-full bg-sale px-2 py-0.5 text-[11px] font-bold text-white">-{p.discount}%</span>}
         {p.availability === "Low stock" && (
           <span className="absolute bottom-3 left-3 rounded-full bg-card/95 px-2 py-0.5 text-[11px] font-semibold text-warning ring-1 ring-black/5">Only {p.stock} left</span>
         )}

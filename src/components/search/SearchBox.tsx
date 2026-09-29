@@ -75,7 +75,7 @@ export function SearchBox({ index, className, autoFocus }: { index: SearchEntry[
     <Command
       shouldFilter={false}
       loop
-      className={cn("relative overflow-visible rounded-full! bg-transparent p-0", className)}
+      className={cn("relative h-auto overflow-visible rounded-full! bg-transparent p-0", className)}
       onKeyDown={(e) => {
         if (e.key === "Escape") {
           setOpen(false);
