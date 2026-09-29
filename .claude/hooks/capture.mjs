@@ -18,6 +18,7 @@ import { fileURLToPath } from "node:url";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const LOG_DIR = path.join(ROOT, ".agent-logs");
 const ERR_LOG = path.join(ROOT, ".claude", "hooks", "capture-errors.log");
+const EVENT_LOG = path.join(ROOT, ".claude", "hooks", "capture-events.log");
 const CONFIG = readJson(path.join(ROOT, ".claude", "hooks", "capture.config.json")) ?? {};
 
 main().catch((err) => {
@@ -30,6 +31,10 @@ main().catch((err) => {
 async function main() {
   const input = await readHookInput();
   const transcriptPath = input.transcript_path;
+  // Local trail of hook invocations (gitignored) so we can prove each event fires.
+  try {
+    fs.appendFileSync(EVENT_LOG, `${new Date().toISOString()} ${input.hook_event_name ?? "?"} ${input.session_id ?? "?"}\n`);
+  } catch {}
   if (!transcriptPath || !fs.existsSync(transcriptPath)) return;
 
   let turns = parseTranscript(transcriptPath);
