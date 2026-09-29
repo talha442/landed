@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
+import { CheckoutFlow } from "@/components/checkout/CheckoutFlow";
 import { products, summarize } from "@/lib/catalog";
-import { CheckoutView } from "./CheckoutView";
 
 export const metadata: Metadata = { title: "Checkout" };
 
 export default function CheckoutPage() {
-  return <CheckoutView catalog={products.map(summarize)} />;
+  return <CheckoutFlow catalog={products.map(summarize)} />;
 }

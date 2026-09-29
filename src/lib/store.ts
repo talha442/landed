@@ -3,44 +3,31 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { useSyncExternalStore } from "react";
-import type { Estimate, Speed } from "./shipping";
+import type { Address, Order } from "./orders";
+import { demoState } from "./demo";
 import type { ProductSummary } from "./types";
 
-export type CartLine = { key: string; productId: number; qty: number; size?: string };
+export type { Address, Order };
 
-export type Address = {
+export type CartLine = { key: string; productId: string; qty: number; size?: string };
+
+export type User = {
+  email: string;
   name: string;
-  phone: string;
-  line1: string;
-  city: string;
-  postcode: string;
-  country: string;
-};
-
-export type OrderLine = { productId: number; title: string; thumbnail: string; price: number; qty: number; size?: string };
-
-export type Order = {
-  id: string;
+  passwordHash: string;
   createdAt: string;
-  email: string | null;
-  lines: OrderLine[];
-  destination: string;
-  speed: Speed;
-  estimate: Estimate;
-  address: Address;
-  payment: "cod" | "card";
-  deliveryFrom: string;
-  deliveryTo: string;
-  status: "placed" | "cancelled";
+  addresses: Address[];
+  defaultAddressId?: string;
 };
-
-export type User = { email: string; name: string; passwordHash: string; address?: Address };
 
 type State = {
   shipTo: string | null;
   cart: CartLine[];
   saved: CartLine[];
-  recentlyViewed: number[];
+  wishlist: string[];
+  /** Snapshots, newest first, so any page can show them without the catalog. */
+  recentlyViewed: ProductSummary[];
+  recentSearches: string[];
   users: User[];
   currentEmail: string | null;
   orders: Order[];
@@ -48,39 +35,51 @@ type State = {
   compare: ProductSummary[];
 
   setShipTo: (code: string) => void;
-  addToCart: (productId: number, qty?: number, size?: string) => void;
+  addToCart: (productId: string, qty?: number, size?: string) => void;
   setQty: (key: string, qty: number) => void;
-  remove: (key: string) => void;
+  remove: (key: string) => CartLine | undefined;
+  restore: (line: CartLine, index?: number) => void;
   saveForLater: (key: string) => void;
   moveToCart: (key: string) => void;
   removeSaved: (key: string) => void;
-  viewed: (productId: number) => void;
-  register: (u: User) => void;
+  toggleWishlist: (productId: string) => boolean;
+  viewed: (p: ProductSummary) => void;
+  searched: (q: string) => void;
+  clearSearches: () => void;
+  register: (u: Omit<User, "addresses" | "createdAt">) => void;
   signIn: (email: string) => void;
   signOut: () => void;
-  saveAddress: (email: string, a: Address) => void;
+  updateProfile: (email: string, patch: Partial<Pick<User, "name">>) => void;
+  upsertAddress: (email: string, a: Address, makeDefault?: boolean) => void;
+  deleteAddress: (email: string, id: string) => void;
   placeOrder: (o: Order) => void;
   cancelOrder: (id: string) => void;
   toggleCompare: (p: ProductSummary) => boolean;
   clearCompare: () => void;
+  resetDemo: () => void;
 };
 
-const lineKey = (productId: number, size?: string) => (size ? `${productId}:${size}` : String(productId));
+const lineKey = (productId: string, size?: string) => (size ? `${productId}:${size}` : productId);
 
 export const MAX_QTY = 10;
 export const MAX_COMPARE = 4;
 
+const initial = () => ({
+  shipTo: null,
+  cart: [],
+  saved: [],
+  wishlist: [],
+  recentlyViewed: [],
+  recentSearches: [],
+  currentEmail: null,
+  compare: [],
+  ...demoState(),
+});
+
 export const useStore = create<State>()(
   persist(
     (set, get) => ({
-      shipTo: null,
-      cart: [],
-      saved: [],
-      recentlyViewed: [],
-      users: [],
-      currentEmail: null,
-      orders: [],
-      compare: [],
+      ...initial(),
 
       setShipTo: (code) => set({ shipTo: code }),
 
@@ -99,7 +98,19 @@ export const useStore = create<State>()(
           cart: qty <= 0 ? s.cart.filter((l) => l.key !== key) : s.cart.map((l) => (l.key === key ? { ...l, qty: Math.min(MAX_QTY, qty) } : l)),
         })),
 
-      remove: (key) => set((s) => ({ cart: s.cart.filter((l) => l.key !== key) })),
+      remove: (key) => {
+        const line = get().cart.find((l) => l.key === key);
+        set((s) => ({ cart: s.cart.filter((l) => l.key !== key) }));
+        return line;
+      },
+
+      restore: (line, index) =>
+        set((s) => {
+          if (s.cart.some((l) => l.key === line.key)) return s;
+          const cart = [...s.cart];
+          cart.splice(index ?? cart.length, 0, line);
+          return { cart };
+        }),
 
       saveForLater: (key) =>
         set((s) => {
@@ -117,14 +128,56 @@ export const useStore = create<State>()(
 
       removeSaved: (key) => set((s) => ({ saved: s.saved.filter((l) => l.key !== key) })),
 
-      viewed: (productId) => set((s) => ({ recentlyViewed: [productId, ...s.recentlyViewed.filter((id) => id !== productId)].slice(0, 12) })),
+      /** Returns true when the product is now in the wishlist. */
+      toggleWishlist: (productId) => {
+        const has = get().wishlist.includes(productId);
+        set((s) => ({ wishlist: has ? s.wishlist.filter((id) => id !== productId) : [productId, ...s.wishlist] }));
+        return !has;
+      },
 
-      register: (u) => set((s) => ({ users: [...s.users.filter((x) => x.email !== u.email), u], currentEmail: u.email })),
-      signIn: (email) => set({ currentEmail: email }),
+      viewed: (p) => set((s) => ({ recentlyViewed: [p, ...s.recentlyViewed.filter((x) => x.id !== p.id)].slice(0, 12) })),
+
+      searched: (q) => {
+        const clean = q.trim();
+        if (!clean) return;
+        set((s) => ({ recentSearches: [clean, ...s.recentSearches.filter((x) => x.toLowerCase() !== clean.toLowerCase())].slice(0, 6) }));
+      },
+      clearSearches: () => set({ recentSearches: [] }),
+
+      register: (u) =>
+        set((s) => ({
+          users: [...s.users.filter((x) => x.email !== u.email), { ...u, createdAt: new Date().toISOString(), addresses: [] }],
+          currentEmail: u.email,
+          orders: claimGuestOrders(s.orders, u.email),
+        })),
+
+      signIn: (email) => set((s) => ({ currentEmail: email, orders: claimGuestOrders(s.orders, email) })),
       signOut: () => set({ currentEmail: null }),
-      saveAddress: (email, a) => set((s) => ({ users: s.users.map((u) => (u.email === email ? { ...u, address: a } : u)) })),
+
+      updateProfile: (email, patch) => set((s) => ({ users: s.users.map((u) => (u.email === email ? { ...u, ...patch } : u)) })),
+
+      upsertAddress: (email, a, makeDefault) =>
+        set((s) => ({
+          users: s.users.map((u) => {
+            if (u.email !== email) return u;
+            const exists = u.addresses.some((x) => x.id === a.id);
+            const addresses = exists ? u.addresses.map((x) => (x.id === a.id ? a : x)) : [...u.addresses, a];
+            return { ...u, addresses, defaultAddressId: makeDefault || !u.defaultAddressId ? a.id : u.defaultAddressId };
+          }),
+        })),
+
+      deleteAddress: (email, id) =>
+        set((s) => ({
+          users: s.users.map((u) => {
+            if (u.email !== email) return u;
+            const addresses = u.addresses.filter((x) => x.id !== id);
+            return { ...u, addresses, defaultAddressId: u.defaultAddressId === id ? addresses[0]?.id : u.defaultAddressId };
+          }),
+        })),
 
       placeOrder: (o) => set((s) => ({ orders: [o, ...s.orders], cart: [] })),
+      cancelOrder: (id) => set((s) => ({ orders: s.orders.map((o) => (o.id === id ? { ...o, cancelledAt: new Date().toISOString() } : o)) })),
+
       /** Returns false when the tray is already full. */
       toggleCompare: (p) => {
         const list = get().compare;
@@ -137,11 +190,22 @@ export const useStore = create<State>()(
         return true;
       },
       clearCompare: () => set({ compare: [] }),
-      cancelOrder: (id) => set((s) => ({ orders: s.orders.map((o) => (o.id === id ? { ...o, status: "cancelled" } : o)) })),
+
+      resetDemo: () => set(initial()),
     }),
-    { name: "amazon-rebuild", version: 1 },
+    {
+      name: "landed",
+      version: 2,
+      // v1 was the pre-rebrand shape (numeric product ids); start fresh rather than migrate.
+      migrate: () => initial() as unknown as State,
+    },
   ),
 );
+
+/** Guest orders placed on this device join the account you sign in to. */
+function claimGuestOrders(orders: Order[], email: string) {
+  return orders.map((o) => (o.accountEmail === null ? { ...o, accountEmail: email } : o));
+}
 
 /** Persisted state only exists in the browser; render placeholders until it's loaded. */
 export function useHydrated() {
