@@ -20,7 +20,7 @@ export function Header() {
         <div className="mx-auto flex max-w-[1500px] flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 md:flex-nowrap">
           <Logo />
           <ShipToPicker />
-          <SearchBar className="order-last w-full md:order-none md:flex-1" />
+          <SearchBarKeyed />
           <AccountLink />
           <Link href="/orders" className="hidden rounded px-2 py-1 leading-tight outline-white hover:outline sm:block">
             <span className="block text-xs text-[#ccc]">Returns</span>
@@ -126,19 +126,20 @@ function ShipToPicker() {
   );
 }
 
-function SearchBar({ className = "" }: { className?: string }) {
-  const router = useRouter();
+// Remount the box whenever the search in the URL changes (back/forward, department
+// links) so it always shows the query on screen.
+function SearchBarKeyed() {
   const params = useSearchParams();
-  const pathname = usePathname();
-  const onSearch = pathname === "/s";
-  const [q, setQ] = useState(onSearch ? (params.get("q") ?? "") : "");
-  const [dept, setDept] = useState(onSearch ? (params.get("dept") ?? "") : "");
+  const onSearch = usePathname() === "/s";
+  const q = onSearch ? (params.get("q") ?? "") : "";
+  const dept = onSearch ? (params.get("dept") ?? "") : "";
+  return <SearchBar key={`${q}|${dept}`} initialQ={q} initialDept={dept} className="order-last w-full md:order-none md:flex-1" />;
+}
 
-  // Keep the box in sync when navigating between searches with back/forward.
-  useEffect(() => {
-    setQ(onSearch ? (params.get("q") ?? "") : "");
-    setDept(onSearch ? (params.get("dept") ?? "") : "");
-  }, [params, onSearch]);
+function SearchBar({ initialQ, initialDept, className = "" }: { initialQ: string; initialDept: string; className?: string }) {
+  const router = useRouter();
+  const [q, setQ] = useState(initialQ);
+  const [dept, setDept] = useState(initialDept);
 
   function submit(e: React.FormEvent) {
     e.preventDefault();

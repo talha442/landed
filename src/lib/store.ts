@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import type { Estimate, Speed } from "./shipping";
 
 export type CartLine = { key: string; productId: number; qty: number; size?: string };
@@ -126,12 +126,11 @@ export const useStore = create<State>()(
 
 /** Persisted state only exists in the browser; render placeholders until it's loaded. */
 export function useHydrated() {
-  const [hydrated, setHydrated] = useState(false);
-  useEffect(() => {
-    if (useStore.persist.hasHydrated()) setHydrated(true);
-    return useStore.persist.onFinishHydration(() => setHydrated(true));
-  }, []);
-  return hydrated;
+  return useSyncExternalStore(
+    (onChange) => useStore.persist.onFinishHydration(onChange),
+    () => useStore.persist.hasHydrated(),
+    () => false,
+  );
 }
 
 export function useCurrentUser() {
