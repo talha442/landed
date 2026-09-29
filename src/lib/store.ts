@@ -62,6 +62,17 @@ type State = {
 const lineKey = (productId: string, size?: string) => (size ? `${productId}:${size}` : productId);
 
 export const MAX_QTY = 10;
+
+/**
+ * In-memory only. Set when someone signs out on purpose, so the account area's
+ * "please sign in" redirect doesn't race the sign-out's own navigation home.
+ */
+export const session = {
+  signedOut: false,
+  clearSignOut() {
+    session.signedOut = false;
+  },
+};
 export const MAX_COMPARE = 4;
 
 const initial = () => ({
@@ -145,14 +156,20 @@ export const useStore = create<State>()(
       clearSearches: () => set({ recentSearches: [] }),
 
       register: (u) =>
-        set((s) => ({
+        set((s) => (session.signedOut = false, {
           users: [...s.users.filter((x) => x.email !== u.email), { ...u, createdAt: new Date().toISOString(), addresses: [] }],
           currentEmail: u.email,
           orders: claimGuestOrders(s.orders, u.email),
         })),
 
-      signIn: (email) => set((s) => ({ currentEmail: email, orders: claimGuestOrders(s.orders, email) })),
-      signOut: () => set({ currentEmail: null }),
+      signIn: (email) => {
+        session.signedOut = false;
+        set((s) => ({ currentEmail: email, orders: claimGuestOrders(s.orders, email) }));
+      },
+      signOut: () => {
+        session.signedOut = true;
+        set({ currentEmail: null });
+      },
 
       updateProfile: (email, patch) => set((s) => ({ users: s.users.map((u) => (u.email === email ? { ...u, ...patch } : u)) })),
 

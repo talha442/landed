@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCurrentUser, useHydrated } from "@/lib/store";
+import { session, useCurrentUser, useHydrated } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 const NAV = [
@@ -24,8 +24,11 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (hydrated && !user) router.replace(`/signin?next=${encodeURIComponent(pathname)}`);
+    if (hydrated && !user && !session.signedOut) router.replace(`/signin?next=${encodeURIComponent(pathname)}`);
   }, [hydrated, user, router, pathname]);
+
+  // Once we've left the account area, the next signed-out visit should redirect again.
+  useEffect(() => () => session.clearSignOut(), []);
 
   if (!hydrated || !user) {
     return (

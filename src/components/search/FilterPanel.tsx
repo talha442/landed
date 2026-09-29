@@ -1,7 +1,7 @@
 "use client";
 
 import { Star } from "lucide-react";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -35,6 +35,9 @@ const RATINGS = [
 
 /** Five filters that matter, instead of the forty-odd groups on Amazon's sidebar. */
 export function FilterPanel({ facets, filters, dest, setList, setValue, setPrice }: Props) {
+  // Rendered twice (sidebar and mobile sheet), so ids must be unique per instance
+  // or labels point at the hidden copy and the visible controls lose their names.
+  const uid = useId();
   const toggle = (key: "category" | "brand", list: string[], v: string, on: boolean) => setList(key, on ? [...list, v] : list.filter((x) => x !== v));
   const [showAllBrands, setShowAllBrands] = useState(false);
   const brands = showAllBrands ? facets.brands : facets.brands.slice(0, 6);
@@ -45,7 +48,7 @@ export function FilterPanel({ facets, filters, dest, setList, setValue, setPrice
         <AccordionTrigger className="text-sm font-semibold hover:no-underline">Department</AccordionTrigger>
         <AccordionContent className="space-y-2.5">
           {facets.categories.map((c) => {
-            const id = `f-cat-${c.slug}`;
+            const id = `${uid}-cat-${c.slug}`;
             return (
               <div key={c.slug} className="flex items-center gap-2.5">
                 <Checkbox id={id} checked={filters.categories.includes(c.slug)} onCheckedChange={(v) => toggle("category", filters.categories, c.slug, v === true)} />
@@ -72,8 +75,8 @@ export function FilterPanel({ facets, filters, dest, setList, setValue, setPrice
           <RadioGroup value={String(filters.rating)} onValueChange={(v) => setValue("rating", Number(v) || null)} className="gap-2.5">
             {RATINGS.map((r) => (
               <div key={r.value} className="flex items-center gap-2.5">
-                <RadioGroupItem value={r.value} id={`f-rating-${r.value}`} />
-                <Label htmlFor={`f-rating-${r.value}`} className="flex cursor-pointer items-center gap-1 font-normal">
+                <RadioGroupItem value={r.value} id={`${uid}-rating-${r.value}`} />
+                <Label htmlFor={`${uid}-rating-${r.value}`} className="flex cursor-pointer items-center gap-1 font-normal">
                   {r.value !== "0" && <Star className="size-3.5 fill-star text-star" />}
                   {r.label}
                 </Label>
@@ -94,8 +97,8 @@ export function FilterPanel({ facets, filters, dest, setList, setValue, setPrice
               { v: "0", l: "Any time" },
             ].map((o) => (
               <div key={o.v} className="flex items-center gap-2.5">
-                <RadioGroupItem value={o.v} id={`f-by-${o.v}`} />
-                <Label htmlFor={`f-by-${o.v}`} className="cursor-pointer font-normal">
+                <RadioGroupItem value={o.v} id={`${uid}-by-${o.v}`} />
+                <Label htmlFor={`${uid}-by-${o.v}`} className="cursor-pointer font-normal">
                   {o.l}
                 </Label>
               </div>
@@ -109,7 +112,7 @@ export function FilterPanel({ facets, filters, dest, setList, setValue, setPrice
           <AccordionTrigger className="text-sm font-semibold hover:no-underline">Brand</AccordionTrigger>
           <AccordionContent className="space-y-2.5">
             {brands.map((b) => {
-              const id = `f-brand-${b.name}`;
+              const id = `${uid}-brand-${b.name}`;
               return (
                 <div key={b.name} className="flex items-center gap-2.5">
                   <Checkbox id={id} checked={filters.brands.includes(b.name)} onCheckedChange={(v) => toggle("brand", filters.brands, b.name, v === true)} />
