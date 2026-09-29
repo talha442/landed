@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* Amazon's palette, kept recognisable on purpose */
+  --color-ink: #0f1111;
+  --color-muted: #565959;
+  --color-line: #d5d9d9;
+  --color-canvas: #eaeded;
+  --color-nav: #131921;
+  --color-nav-2: #232f3e;
+  --color-cta: #ffd814;
+  --color-cta-hover: #f7ca00;
+  --color-buy: #ffa41c;
+  --color-buy-hover: #fa8900;
+  --color-link: #007185;
+  --color-link-hover: #c7511f;
+  --color-deal: #cc0c39;
+  --color-ok: #067d62;
+  --color-star: #de7921;
+}
+
+body {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-link;
+}
+
+@utility btn-cta {
+  @apply btn bg-cta hover:bg-cta-hover text-ink shadow-[0_1px_2px_rgba(15,17,17,.15)];
+}
+
+@utility btn-buy {
+  @apply btn bg-buy hover:bg-buy-hover text-ink;
+}
+
+@utility btn-ghost {
+  @apply btn border border-line bg-white hover:bg-[#f7fafa] text-ink;
+}
+
+@utility link {
+  @apply text-link hover:text-link-hover hover:underline;
+}
+
+@utility card {
+  @apply rounded-lg bg-white;
+}
+
+@utility field {
+  @apply w-full rounded-md border border-[#888c8c] bg-white px-3 py-2 text-sm shadow-[inset_0_1px_2px_rgba(15,17,17,.15)] outline-none focus:border-[#007185] focus:ring-3 focus:ring-[#c8f3fa];
+}
+
+@utility skeleton {
+  @apply animate-pulse rounded bg-[#e3e6e6];
+}

@@ -10,3 +10,6 @@ out/
 
 # Research screenshots include a home address (checkout page); kept local until redacted
 research/
+*.tsbuildinfo
+next-env.d.ts
+/public/img/_raw/
