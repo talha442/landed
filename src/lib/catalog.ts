@@ -74,6 +74,8 @@ export function summarize(p: Product): ProductSummary {
 
 // ---------------------------------------------------------------- search
 
+const ACCESSORY_WORDS = new Set(["case", "cover", "charger", "cable", "accessory", "accessorie", "stand", "holder", "earphone", "headphone", "stick", "adapter", "strap"]);
+
 const STOP = new Set(["the", "a", "an", "for", "and", "of", "with", "in", "to"]);
 
 function tokens(s: string) {
@@ -112,17 +114,25 @@ export function search(query: string, department?: string) {
       let matched = 0;
       for (const t of q) {
         const hit = (arr: string[]) => arr.some((w) => w === t || (t.length >= 3 && w.startsWith(t)));
+        // Compound words: "phone" should find "iPhone" and "smartphones".
+        const inside = (arr: string[]) => t.length >= 4 && arr.some((w) => w.includes(t));
         let s = 0;
         if (hit(title)) s += 5;
+        else if (inside(title)) s += 3;
         if (hit(brand)) s += 4;
         if (hit(cat)) s += 3;
+        // Being in the category that *is* the query beats being an accessory for it.
+        if (inside(cat) && !cat.some((w) => w.includes("accessor"))) s += 4;
         if (hit(tags)) s += 2;
         if (desc.has(t)) s += 1;
         if (s > 0) matched++;
         score += s;
       }
+      // Searching "phone" should show phones before phone cases, unless you asked for a case.
+      const wantsAccessory = q.some((t) => ACCESSORY_WORDS.has(t));
+      if (!wantsAccessory && p.category.includes("accessories") && p.category !== "sports-accessories") score -= 4;
       // Every query word has to match somewhere, like a real search box.
-      return { p, score: matched === q.length ? score + p.rating * 0.1 : 0 };
+      return { p, score: matched === q.length ? Math.max(0.5, score + p.rating * 0.1) : 0 };
     })
     .filter((x) => x.score > 0)
     .sort((a, b) => b.score - a.score);

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CheckIcon, InfoIcon, TruckIcon } from "@/components/icons";
 import { Amount, PriceSkeleton } from "@/components/Price";
-import { deliveryWindow, estimateOne, formatWindow, money } from "@/lib/shipping";
+import { deliveryWindow, estimate, estimateOne, formatWindow, money } from "@/lib/shipping";
 import { MAX_QTY, useHydrated, useStore } from "@/lib/store";
 import { useDestination } from "@/lib/useDestination";
 import { SizePicker } from "./SizePicker";
@@ -73,7 +73,13 @@ export function Purchase({ product: p }: Props) {
                   <dd>{money(e.total, dest)}</dd>
                 </div>
               </dl>
-              {extraItemShipping < dest.shipping.standard.perShipment && e.shipping > 0 && (
+              {dest.freeShippingOver !== null && !e.freeShipping && (
+                <p className="mt-2 flex max-w-sm gap-1.5 text-xs text-muted">
+                  <InfoIcon className="mt-px size-3.5 shrink-0" />
+                  <span>Free shipping on orders over {money(dest.freeShippingOver, dest)}. Your cart tracks how close you are.</span>
+                </p>
+              )}
+              {extraItemShipping > 0 && e.shipping > 0 && (
                 <p className="mt-2 flex max-w-sm gap-1.5 text-xs text-muted">
                   <InfoIcon className="mt-px size-3.5 shrink-0" />
                   <span>
@@ -104,10 +110,10 @@ export function Purchase({ product: p }: Props) {
           <PriceSkeleton />
         ) : (
           <>
-            <Amount usd={e.total * qty} className="text-2xl" />
-            {qty > 1 && <p className="text-xs text-muted">for {qty} if bought on their own. Your cart shows the combined saving.</p>}
+            <Amount usd={estimate([{ price: p.price, qty }], dest).total} className="text-2xl" />
+            {qty > 1 && <p className="text-xs text-muted">for {qty}, shipped together in one box</p>}
             <p className="mt-2 flex items-start gap-1.5 text-sm">
-              <TruckIcon className="mt-0.5 shrink-0" />
+              <TruckIcon className="mt-0.5 size-4 shrink-0" />
               <span>
                 Delivered <span className="font-bold">{formatWindow(w)}</span>
               </span>

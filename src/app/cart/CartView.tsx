@@ -168,7 +168,7 @@ function Summary({ lines }: { lines: ResolvedLine[] }) {
         </p>
       )}
       <p className="flex items-start gap-1.5 text-sm">
-        <TruckIcon className="mt-0.5 shrink-0" />
+        <TruckIcon className="mt-0.5 size-4 shrink-0" />
         <span>
           Arrives <span className="font-bold">{formatWindow(w)}</span>
         </span>
