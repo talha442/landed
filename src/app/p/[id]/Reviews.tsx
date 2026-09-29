@@ -28,7 +28,7 @@ export function Reviews({ rating, reviews }: { rating: number; reviews: Review[]
             <Stars rating={rating} className="size-5" />
             <span className="text-lg">{rating.toFixed(1)} out of 5</span>
           </div>
-          <p className="mt-1 text-sm text-muted">
+          <p className="mt-1 text-sm text-subtle">
             {reviews.length} {reviews.length === 1 ? "review" : "reviews"}
           </p>
           <ul className="mt-3 space-y-1.5">
@@ -44,7 +44,7 @@ export function Reviews({ rating, reviews }: { rating: number; reviews: Review[]
                   <span className="h-4 flex-1 overflow-hidden rounded border border-[#e3e6e6] bg-[#f0f2f2]">
                     <span className="block h-full bg-star" style={{ width: `${reviews.length ? (n / reviews.length) * 100 : 0}%` }} />
                   </span>
-                  <span className="w-5 text-right text-muted">{n}</span>
+                  <span className="w-5 text-right text-subtle">{n}</span>
                 </button>
               </li>
             ))}
@@ -59,7 +59,7 @@ export function Reviews({ rating, reviews }: { rating: number; reviews: Review[]
 
         <div className="min-w-0">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-sm text-muted">
+            <p className="text-sm text-subtle">
               {filter ? `Showing ${filter}-star reviews` : "Showing all reviews"}
               {filter && (
                 <button className="link ml-2" onClick={() => setFilter(null)}>
@@ -77,7 +77,7 @@ export function Reviews({ rating, reviews }: { rating: number; reviews: Review[]
             {list.map((r, i) => (
               <li key={i} className="py-4 first:pt-0">
                 <div className="flex items-center gap-2 text-sm">
-                  <span className="flex size-7 items-center justify-center rounded-full bg-[#e3e6e6] text-xs font-bold text-muted" aria-hidden>
+                  <span className="flex size-7 items-center justify-center rounded-full bg-[#e3e6e6] text-xs font-bold text-subtle" aria-hidden>
                     {r.reviewerName
                       .split(" ")
                       .map((x) => x[0])
@@ -89,7 +89,7 @@ export function Reviews({ rating, reviews }: { rating: number; reviews: Review[]
                   <Stars rating={r.rating} className="size-3.5" />
                   <span className="text-sm font-bold">{r.comment}</span>
                 </div>
-                <p className="mt-0.5 text-xs text-muted">
+                <p className="mt-0.5 text-xs text-subtle">
                   Reviewed {new Date(r.date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" })}
                 </p>
               </li>

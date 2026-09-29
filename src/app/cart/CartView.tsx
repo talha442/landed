@@ -84,7 +84,7 @@ function CartItem({ line }: { line: ResolvedLine }) {
             <span className="font-bold">Size:</span> {line.size}
           </p>
         )}
-        {line.qty > 1 && <p className="mt-1 text-xs text-muted">{money(p.price, dest)} each</p>}
+        {line.qty > 1 && <p className="mt-1 text-xs text-subtle">{money(p.price, dest)} each</p>}
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
           <div className="flex items-center rounded-full border-2 border-cta" role="group" aria-label="Quantity">
             <button
@@ -176,7 +176,7 @@ function Summary({ lines }: { lines: ResolvedLine[] }) {
       <Link href="/checkout" className="btn-cta w-full">
         Proceed to checkout
       </Link>
-      <p className="text-center text-xs text-muted">This total is what checkout will charge, in {dest.currency}.</p>
+      <p className="text-center text-xs text-subtle">This total is what checkout will charge, in {dest.currency}.</p>
     </aside>
   );
 }
@@ -194,7 +194,7 @@ function SavedItem({ line }: { line: ResolvedLine }) {
       <Link href={`/p/${p.id}`} className="mt-2 line-clamp-2 text-sm hover:text-link-hover">
         {p.title}
       </Link>
-      {line.size && <p className="text-xs text-muted">Size {line.size}</p>}
+      {line.size && <p className="text-xs text-subtle">Size {line.size}</p>}
       <p className="mt-1 font-bold">{money(p.price, dest)}</p>
       <div className="mt-auto flex flex-wrap gap-2 pt-2">
         <button className="btn-ghost px-3 py-1" onClick={() => moveToCart(line.key)}>
@@ -213,7 +213,7 @@ function EmptyCart({ recent }: { recent: ProductSummary[] }) {
     <div className="space-y-4">
       <div className="card p-8 text-center">
         <h1 className="text-2xl font-medium">Your cart is empty</h1>
-        <p className="mt-2 text-sm text-muted">Everything you add shows its full delivered price, so the total here is the total you pay.</p>
+        <p className="mt-2 text-sm text-subtle">Everything you add shows its full delivered price, so the total here is the total you pay.</p>
         <div className="mt-4 flex justify-center gap-2">
           <Link href="/s?sort=discount" className="btn-cta">
             See today&apos;s deals

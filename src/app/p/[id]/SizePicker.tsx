@@ -64,7 +64,7 @@ export function SizePicker({
             }`}
           >
             {o.label}
-            {o.sub && <span className="block text-[11px] font-normal text-muted">{o.sub}</span>}
+            {o.sub && <span className="block text-[11px] font-normal text-subtle">{o.sub}</span>}
           </button>
         ))}
       </div>
@@ -100,23 +100,23 @@ function SizeFinder({ onPick }: { onPick: (s: string) => void }) {
       <div className="mt-2 flex gap-2">
         {metric ? (
           <label className="flex-1">
-            <span className="text-xs text-muted">Height (cm)</span>
+            <span className="text-xs text-subtle">Height (cm)</span>
             <input className="field mt-0.5" inputMode="numeric" value={h} onChange={(e) => setH(e.target.value)} placeholder="175" />
           </label>
         ) : (
           <>
             <label className="flex-1">
-              <span className="text-xs text-muted">Height (ft)</span>
+              <span className="text-xs text-subtle">Height (ft)</span>
               <input className="field mt-0.5" inputMode="numeric" value={h} onChange={(e) => setH(e.target.value)} placeholder="5" />
             </label>
             <label className="flex-1">
-              <span className="text-xs text-muted">(in)</span>
+              <span className="text-xs text-subtle">(in)</span>
               <input className="field mt-0.5" inputMode="numeric" value={h2} onChange={(e) => setH2(e.target.value)} placeholder="10" />
             </label>
           </>
         )}
         <label className="flex-1">
-          <span className="text-xs text-muted">Weight ({metric ? "kg" : "lb"})</span>
+          <span className="text-xs text-subtle">Weight ({metric ? "kg" : "lb"})</span>
           <input className="field mt-0.5" inputMode="numeric" value={w} onChange={(e) => setW(e.target.value)} placeholder={metric ? "72" : "160"} />
         </label>
       </div>

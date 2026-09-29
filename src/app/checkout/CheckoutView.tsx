@@ -46,7 +46,7 @@ export function CheckoutView({ catalog }: { catalog: ProductSummary[] }) {
       <div className="mx-auto max-w-[1150px] px-3 py-10">
         <div className="card p-8 text-center">
           <h1 className="text-2xl font-medium">Nothing to check out</h1>
-          <p className="mt-2 text-sm text-muted">Your cart is empty.</p>
+          <p className="mt-2 text-sm text-subtle">Your cart is empty.</p>
           <Link href="/s" className="btn-cta mt-4">
             Keep shopping
           </Link>
@@ -140,7 +140,7 @@ export function CheckoutView({ catalog }: { catalog: ProductSummary[] }) {
                   <br />
                   {addr!.line1}, {addr!.city} {addr!.postcode}, {dest.name}
                   <br />
-                  <span className="text-muted">{addr!.phone}</span>
+                  <span className="text-subtle">{addr!.phone}</span>
                 </address>
                 <button className="link shrink-0" onClick={() => setEditing(true)}>
                   Change
@@ -149,7 +149,7 @@ export function CheckoutView({ catalog }: { catalog: ProductSummary[] }) {
             )}
             {!user && !showForm && (
               <label className="mt-4 block max-w-sm text-sm">
-                <span className="font-bold">Email for order updates</span> <span className="text-muted">(optional)</span>
+                <span className="font-bold">Email for order updates</span> <span className="text-subtle">(optional)</span>
                 <input type="email" className="field mt-1" value={email} onChange={(ev) => setEmail(ev.target.value)} placeholder="you@example.com" />
               </label>
             )}
@@ -168,7 +168,7 @@ export function CheckoutView({ catalog }: { catalog: ProductSummary[] }) {
                     <input type="radio" name="speed" checked={speed === sp} onChange={() => setSpeed(sp)} className="mt-0.5 accent-link" />
                     <span>
                       <span className="font-bold">{formatWindow(w)}</span>
-                      <span className="block text-muted">
+                      <span className="block text-subtle">
                         {sp === "standard" ? "Standard" : "Express"} · {est.shipping ? `${money(est.shipping, dest)} shipping` : "Free shipping"}
                       </span>
                     </span>
@@ -200,7 +200,7 @@ export function CheckoutView({ catalog }: { catalog: ProductSummary[] }) {
                   <img src={l.product.thumbnail} alt="" className="size-14 rounded bg-[#f7f8f8] object-contain p-1 mix-blend-multiply" />
                   <span className="min-w-0 flex-1">
                     <span className="line-clamp-1">{l.product.title}</span>
-                    <span className="text-xs text-muted">
+                    <span className="text-xs text-subtle">
                       Qty {l.qty}
                       {l.size && ` · Size ${l.size}`}
                     </span>
@@ -228,7 +228,7 @@ export function CheckoutView({ catalog }: { catalog: ProductSummary[] }) {
               <dd>{money(e.total, dest)}</dd>
             </div>
           </dl>
-          <p className="text-xs text-muted">
+          <p className="text-xs text-subtle">
             Same currency and same total as your cart. Import charges are collected now, so there&apos;s nothing to pay at the door
             {codAvailable && pay === "cod" ? " beyond this total" : ""}.
           </p>
@@ -258,7 +258,7 @@ function PayOption({ checked, onChange, title, sub }: { checked: boolean; onChan
       <input type="radio" name="payment" checked={checked} onChange={onChange} className="mt-0.5 accent-link" />
       <span>
         <span className="font-bold">{title}</span>
-        <span className="block text-muted">{sub}</span>
+        <span className="block text-subtle">{sub}</span>
       </span>
     </label>
   );
@@ -303,7 +303,7 @@ function AddressForm({
             </option>
           ))}
         </select>
-        <span className="mt-1 block text-xs text-muted">Changing country updates shipping, import charges and currency. Currently {country}.</span>
+        <span className="mt-1 block text-xs text-subtle">Changing country updates shipping, import charges and currency. Currently {country}.</span>
       </label>
       <Field label="Full name" value={a.name} onChange={set("name")} error={touched && !a.name.trim()} autoComplete="name" />
       <Field label="Phone" value={a.phone} onChange={set("phone")} error={touched && !a.phone.trim()} autoComplete="tel" type="tel" />
@@ -332,7 +332,7 @@ function Field({
   return (
     <label className={`text-sm ${className}`}>
       <span className="font-bold">{label}</span>
-      {optional && <span className="text-muted"> (optional)</span>}
+      {optional && <span className="text-subtle"> (optional)</span>}
       <input className={`field mt-1 ${error ? "border-deal ring-2 ring-[#fbd7d7]" : ""}`} aria-invalid={error || undefined} {...props} />
       {error && <span className="mt-1 block text-xs text-deal">Enter your {label.toLowerCase()}</span>}
     </label>

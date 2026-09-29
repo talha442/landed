@@ -2,7 +2,17 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { departments } from "@/lib/catalog";
 import { destinations } from "@/lib/shipping";
 import { useCartCount, useCurrentUser, useHydrated, useStore } from "@/lib/store";
@@ -78,51 +88,44 @@ function ShipToPicker() {
   const setShipTo = useStore((s) => s.setShipTo);
   const hydrated = useHydrated();
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  useOutsideClick(ref, () => setOpen(false));
 
   return (
-    <div ref={ref} className="relative order-6 -mx-3 -mb-2 w-[calc(100%+1.5rem)] bg-nav-2 px-1 md:order-none md:m-0 md:w-auto md:bg-transparent md:p-0">
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1 rounded px-2 py-1.5 text-left leading-tight outline-white hover:outline md:items-end md:py-1"
-        aria-expanded={open}
-        aria-haspopup="listbox"
-      >
-        <PinIcon className="size-4 shrink-0 md:mb-0.5" />
-        <span className="flex items-baseline gap-1 md:block">
-          <span className="block text-xs text-[#ccc]">Deliver to</span>
-          <span className="block min-w-20 text-sm font-bold">{hydrated ? dest.name : "…"}</span>
-        </span>
-      </button>
-      {open && (
-        <div className="absolute top-full left-0 z-50 mt-2 w-80 rounded-lg bg-white p-4 text-ink shadow-xl">
-          <p className="font-bold">Where should we deliver?</p>
-          <p className="mt-1 text-xs text-muted">
+    <div className="order-6 -mx-3 -mb-2 w-[calc(100%+1.5rem)] bg-nav-2 px-1 md:order-none md:m-0 md:w-auto md:bg-transparent md:p-0">
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger className="flex items-center gap-1 rounded px-2 py-1.5 text-left leading-tight outline-white hover:outline data-[state=open]:outline md:items-end md:py-1">
+          <PinIcon className="size-4 shrink-0 md:mb-0.5" />
+          <span className="flex items-baseline gap-1 md:block">
+            <span className="block text-xs text-[#ccc]">Deliver to</span>
+            <span className="block min-w-20 text-sm font-bold">{hydrated ? dest.name : "…"}</span>
+          </span>
+        </PopoverTrigger>
+        <PopoverContent align="start" sideOffset={8} className="w-80 p-4">
+          <p className="text-base font-bold">Where should we deliver?</p>
+          <p className="text-xs text-subtle">
             Every price you see becomes the total delivered cost for this country, in its currency: item, shipping and import charges.
           </p>
-          <ul className="mt-3 space-y-1" role="listbox" aria-label="Destination country">
+          <div className="mt-1 space-y-1" role="radiogroup" aria-label="Destination country">
             {destinations.map((d) => (
-              <li key={d.code}>
-                <button
-                  role="option"
-                  aria-selected={d.code === dest.code}
-                  onClick={() => {
-                    setShipTo(d.code);
-                    setOpen(false);
-                  }}
-                  className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-sm hover:bg-[#f0f2f2] ${
-                    d.code === dest.code ? "bg-[#edfdff] font-semibold ring-1 ring-link" : ""
-                  }`}
-                >
-                  <span>{d.name}</span>
-                  <span className="text-xs text-muted">{d.currency}</span>
-                </button>
-              </li>
+              <button
+                key={d.code}
+                role="radio"
+                aria-checked={d.code === dest.code}
+                onClick={() => {
+                  setShipTo(d.code);
+                  setOpen(false);
+                  if (d.code !== dest.code) toast(`Prices now delivered to ${d.name}`, { description: `Shown in ${d.currency}, with shipping and ${d.dutyLabel.toLowerCase()} included.` });
+                }}
+                className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-sm hover:bg-[#f0f2f2] ${
+                  d.code === dest.code ? "bg-[#edfdff] font-semibold ring-1 ring-link" : ""
+                }`}
+              >
+                <span>{d.name}</span>
+                <span className="text-xs text-subtle">{d.currency}</span>
+              </button>
             ))}
-          </ul>
-        </div>
-      )}
+          </div>
+        </PopoverContent>
+      </Popover>
     </div>
   );
 }
@@ -190,9 +193,7 @@ function AccountLink() {
   const user = useCurrentUser();
   const hydrated = useHydrated();
   const signOut = useStore((s) => s.signOut);
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  useOutsideClick(ref, () => setOpen(false));
+  const router = useRouter();
 
   if (!hydrated || !user) {
     return (
@@ -203,31 +204,29 @@ function AccountLink() {
     );
   }
   return (
-    <div ref={ref} className="relative order-2 ml-auto md:order-none md:ml-0">
-      <button onClick={() => setOpen((o) => !o)} className="rounded px-2 py-1 text-left leading-tight outline-white hover:outline" aria-expanded={open}>
+    <DropdownMenu>
+      <DropdownMenuTrigger className="order-2 ml-auto rounded px-2 py-1 text-left leading-tight outline-white hover:outline data-[state=open]:outline md:order-none md:ml-0">
         <span className="block text-xs text-[#ccc]">Hello, {user.name.split(" ")[0]}</span>
         <span className="flex items-center gap-1 text-sm font-bold">
           Account <ChevronDown />
         </span>
-      </button>
-      {open && (
-        <div className="absolute top-full right-0 z-50 mt-2 w-56 rounded-lg bg-white p-2 text-sm text-ink shadow-xl">
-          <p className="truncate px-3 py-2 text-xs text-muted">{user.email}</p>
-          <Link href="/orders" onClick={() => setOpen(false)} className="block rounded px-3 py-2 hover:bg-[#f0f2f2]">
-            Your orders
-          </Link>
-          <button
-            onClick={() => {
-              signOut();
-              setOpen(false);
-            }}
-            className="block w-full rounded px-3 py-2 text-left hover:bg-[#f0f2f2]"
-          >
-            Sign out
-          </button>
-        </div>
-      )}
-    </div>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuLabel className="truncate text-xs font-normal text-subtle">{user.email}</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onSelect={() => router.push("/orders")}>Your orders</DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => router.push("/cart")}>Your cart</DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onSelect={() => {
+            signOut();
+            toast("Signed out");
+          }}
+        >
+          Sign out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
@@ -245,18 +244,4 @@ function CartLink() {
       <span className="hidden pb-1 text-sm font-bold sm:inline">Cart</span>
     </Link>
   );
-}
-
-function useOutsideClick(ref: React.RefObject<HTMLElement | null>, onOutside: () => void) {
-  useEffect(() => {
-    function handle(e: MouseEvent | KeyboardEvent) {
-      if (e instanceof KeyboardEvent ? e.key === "Escape" : ref.current && !ref.current.contains(e.target as Node)) onOutside();
-    }
-    document.addEventListener("mousedown", handle);
-    document.addEventListener("keydown", handle);
-    return () => {
-      document.removeEventListener("mousedown", handle);
-      document.removeEventListener("keydown", handle);
-    };
-  }, [ref, onOutside]);
 }

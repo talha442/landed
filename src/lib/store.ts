@@ -4,6 +4,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { useSyncExternalStore } from "react";
 import type { Estimate, Speed } from "./shipping";
+import type { ProductSummary } from "./types";
 
 export type CartLine = { key: string; productId: number; qty: number; size?: string };
 
@@ -43,6 +44,8 @@ type State = {
   users: User[];
   currentEmail: string | null;
   orders: Order[];
+  /** Snapshots, so the compare tray works on any page without loading the catalog. */
+  compare: ProductSummary[];
 
   setShipTo: (code: string) => void;
   addToCart: (productId: number, qty?: number, size?: string) => void;
@@ -58,15 +61,18 @@ type State = {
   saveAddress: (email: string, a: Address) => void;
   placeOrder: (o: Order) => void;
   cancelOrder: (id: string) => void;
+  toggleCompare: (p: ProductSummary) => boolean;
+  clearCompare: () => void;
 };
 
 const lineKey = (productId: number, size?: string) => (size ? `${productId}:${size}` : String(productId));
 
 export const MAX_QTY = 10;
+export const MAX_COMPARE = 4;
 
 export const useStore = create<State>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       shipTo: null,
       cart: [],
       saved: [],
@@ -74,6 +80,7 @@ export const useStore = create<State>()(
       users: [],
       currentEmail: null,
       orders: [],
+      compare: [],
 
       setShipTo: (code) => set({ shipTo: code }),
 
@@ -118,6 +125,18 @@ export const useStore = create<State>()(
       saveAddress: (email, a) => set((s) => ({ users: s.users.map((u) => (u.email === email ? { ...u, address: a } : u)) })),
 
       placeOrder: (o) => set((s) => ({ orders: [o, ...s.orders], cart: [] })),
+      /** Returns false when the tray is already full. */
+      toggleCompare: (p) => {
+        const list = get().compare;
+        if (list.some((x) => x.id === p.id)) {
+          set({ compare: list.filter((x) => x.id !== p.id) });
+          return true;
+        }
+        if (list.length >= MAX_COMPARE) return false;
+        set({ compare: [...list, p] });
+        return true;
+      },
+      clearCompare: () => set({ compare: [] }),
       cancelOrder: (id) => set((s) => ({ orders: s.orders.map((o) => (o.id === id ? { ...o, status: "cancelled" } : o)) })),
     }),
     { name: "amazon-rebuild", version: 1 },

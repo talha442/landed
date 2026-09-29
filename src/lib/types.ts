@@ -41,4 +41,6 @@ export type ProductSummary = Pick<
   | "stock"
   | "shippingInformation"
   | "thumbnail"
+  | "warranty"
+  | "returnPolicy"
 > & { reviewCount: number };

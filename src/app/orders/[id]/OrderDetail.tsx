@@ -21,7 +21,7 @@ export function OrderDetail({ id }: { id: string }) {
       <div className="mx-auto max-w-[1000px] px-3 py-10">
         <div className="card p-8 text-center">
           <h1 className="text-2xl font-medium">Order not found</h1>
-          <p className="mt-2 text-sm text-muted">Orders are stored in the browser they were placed in.</p>
+          <p className="mt-2 text-sm text-subtle">Orders are stored in the browser they were placed in.</p>
           <Link href="/orders" className="btn-ghost mt-4">
             Your orders
           </Link>
@@ -54,7 +54,7 @@ export function OrderDetail({ id }: { id: string }) {
 
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h1 className="text-2xl font-medium">Order details</h1>
-        <p className="text-sm text-muted">
+        <p className="text-sm text-subtle">
           Placed {new Date(order.createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })} · Order # {order.id}
         </p>
       </div>
@@ -75,7 +75,7 @@ export function OrderDetail({ id }: { id: string }) {
         <div>
           <h2 className="text-sm font-bold">Payment</h2>
           <p className="mt-1 text-sm">{order.payment === "cod" ? "Cash on delivery" : "Test card •••• 4242"}</p>
-          <p className="mt-1 text-sm capitalize text-muted">{order.speed} delivery</p>
+          <p className="mt-1 text-sm capitalize text-subtle">{order.speed} delivery</p>
         </div>
         <dl className="space-y-1 text-sm">
           <div className="flex justify-between"><dt>Items</dt><dd>{money(e.items, dest)}</dd></div>
@@ -98,7 +98,7 @@ export function OrderDetail({ id }: { id: string }) {
                 <Link href={`/p/${l.productId}`} className="link line-clamp-2">
                   {l.title}
                 </Link>
-                <p className="text-muted">
+                <p className="text-subtle">
                   Qty {l.qty}
                   {l.size && ` · Size ${l.size}`} · {money(l.price * l.qty, dest)}
                 </p>

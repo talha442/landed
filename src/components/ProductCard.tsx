@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { categoryName, sizeKind } from "@/lib/catalog";
-import { useStore } from "@/lib/store";
+import { MAX_COMPARE, useHydrated, useStore } from "@/lib/store";
 import type { ProductSummary } from "@/lib/types";
-import { CheckIcon } from "./icons";
 import { DeliveredPrice } from "./Price";
 import { Stars } from "./Stars";
 
@@ -23,7 +23,7 @@ export function ProductCard({ p, priority = false }: { p: ProductSummary; priori
         />
       </Link>
       <div className="flex flex-1 flex-col gap-1.5 p-3">
-        <p className="text-xs text-muted">{p.brand ?? categoryName(p.category)}</p>
+        <p className="text-xs text-subtle">{p.brand ?? categoryName(p.category)}</p>
         <Link href={`/p/${p.id}`} className="line-clamp-2 text-[15px] leading-snug font-medium hover:text-link-hover">
           {p.title}
         </Link>
@@ -36,39 +36,52 @@ export function ProductCard({ p, priority = false }: { p: ProductSummary; priori
         {p.stock > 0 && p.stock <= 5 && <p className="text-xs text-deal">Only {p.stock} left</p>}
         <div className="mt-auto pt-2">
           {p.stock === 0 ? (
-            <p className="text-sm text-muted">Currently unavailable</p>
+            <p className="text-sm text-subtle">Currently unavailable</p>
           ) : needsSize ? (
             <Link href={`/p/${p.id}`} className="btn-ghost w-full">
               Choose size
             </Link>
           ) : (
-            <AddButton id={p.id} />
+            <AddButton p={p} />
           )}
+          <CompareToggle p={p} />
         </div>
       </div>
     </article>
   );
 }
 
-function AddButton({ id }: { id: number }) {
+function AddButton({ p }: { p: ProductSummary }) {
   const add = useStore((s) => s.addToCart);
-  const [added, setAdded] = useState(false);
+  const router = useRouter();
   return (
     <button
       className="btn-cta w-full"
       onClick={() => {
-        add(id);
-        setAdded(true);
-        setTimeout(() => setAdded(false), 1500);
+        add(p.id);
+        toast.success("Added to cart", { description: p.title, action: { label: "View cart", onClick: () => router.push("/cart") } });
       }}
     >
-      {added ? (
-        <>
-          <CheckIcon /> Added
-        </>
-      ) : (
-        "Add to cart"
-      )}
+      Add to cart
     </button>
+  );
+}
+
+function CompareToggle({ p }: { p: ProductSummary }) {
+  const hydrated = useHydrated();
+  const checked = useStore((s) => s.compare.some((x) => x.id === p.id));
+  const toggle = useStore((s) => s.toggleCompare);
+  return (
+    <label className="mt-2 flex cursor-pointer items-center gap-2 text-xs text-subtle select-none">
+      <input
+        type="checkbox"
+        className="accent-link"
+        checked={hydrated && checked}
+        onChange={() => {
+          if (!toggle(p)) toast(`You can compare up to ${MAX_COMPARE} items`, { description: "Remove one from the tray at the bottom first." });
+        }}
+      />
+      Compare
+    </label>
   );
 }

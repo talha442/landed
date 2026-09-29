@@ -18,7 +18,7 @@ export function OrdersList() {
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h1 className="text-3xl font-medium">Your orders</h1>
         {!user && (
-          <p className="text-sm text-muted">
+          <p className="text-sm text-subtle">
             Showing guest orders on this device.{" "}
             <Link href="/signin?next=/orders" className="link">
               Sign in
@@ -41,7 +41,7 @@ export function OrdersList() {
             const dest = getDestination(o.destination);
             return (
               <li key={o.id} className="card overflow-hidden border border-line">
-                <div className="flex flex-wrap gap-x-8 gap-y-2 bg-[#f0f2f2] px-4 py-3 text-xs text-muted">
+                <div className="flex flex-wrap gap-x-8 gap-y-2 bg-[#f0f2f2] px-4 py-3 text-xs text-subtle">
                   <div>
                     <p className="uppercase">Order placed</p>
                     <p className="text-sm text-ink">{new Date(o.createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</p>

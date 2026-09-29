@@ -68,6 +68,8 @@ export function summarize(p: Product): ProductSummary {
     stock: p.stock,
     shippingInformation: p.shippingInformation,
     thumbnail: p.thumbnail,
+    warranty: p.warranty,
+    returnPolicy: p.returnPolicy,
     reviewCount: p.reviews.length,
   };
 }

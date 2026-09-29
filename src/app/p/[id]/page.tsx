@@ -37,7 +37,7 @@ export default async function ProductPage({ params }: PageProps<"/p/[id]">) {
   return (
     <div className="mx-auto max-w-[1500px] px-3 py-4">
       <TrackView id={p.id} />
-      <nav aria-label="Breadcrumb" className="mb-3 text-xs text-muted">
+      <nav aria-label="Breadcrumb" className="mb-3 text-xs text-subtle">
         <ol className="flex flex-wrap items-center gap-1">
           {dept && (
             <li>
@@ -64,7 +64,7 @@ export default async function ProductPage({ params }: PageProps<"/p/[id]">) {
                 Visit the {p.brand} store
               </Link>
             ) : (
-              <span className="text-muted">{categoryName(p.category)}</span>
+              <span className="text-subtle">{categoryName(p.category)}</span>
             )}
           </p>
           <h1 className="mt-1 text-2xl leading-tight font-medium">{p.title}</h1>

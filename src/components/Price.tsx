@@ -34,7 +34,7 @@ export function DeliveredPrice({ price, discount, shippingInformation }: { price
         {discount !== undefined && discount >= 10 && <span className="text-sm font-medium text-deal">-{Math.round(discount)}%</span>}
         <Amount usd={e.total} className="text-[26px]" />
       </div>
-      <p className="text-xs text-muted">
+      <p className="text-xs text-subtle">
         {extra > 0 ? (
           <>
             {money(e.items, dest)} item + {money(extra, dest)} {dest.code === "US" ? "shipping & tax" : "shipping & import"}

@@ -47,7 +47,7 @@ export default function Home() {
         <div className="card flex flex-col justify-between bg-[#fff8e7] p-4">
           <div>
             <h2 className="text-lg font-bold">Sort by what you&apos;ll actually pay</h2>
-            <p className="mt-2 text-sm text-muted">
+            <p className="mt-2 text-sm text-subtle">
               Cheapest item and cheapest delivered aren&apos;t always the same thing. Sort everything by total cost, fees included.
             </p>
           </div>

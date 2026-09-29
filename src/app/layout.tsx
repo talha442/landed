@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Suspense } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { CompareTray } from "@/components/CompareTray";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -22,6 +24,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </Suspense>
         <main className="flex-1">{children}</main>
         <Footer />
+        <CompareTray />
+        <Toaster position="top-center" />
       </body>
     </html>
   );

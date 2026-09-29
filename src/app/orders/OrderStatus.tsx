@@ -31,7 +31,7 @@ export function OrderStatus({ order, detailed = false }: { order: Order; detaile
           {STAGES.map((s, i) => (
             <li key={s} aria-current={i === stage ? "step" : undefined}>
               <div className={`h-1.5 rounded-full ${i <= stage ? "bg-ok" : "bg-[#e3e6e6]"}`} />
-              <p className={`mt-1.5 ${i <= stage ? "font-bold text-ok" : "text-muted"}`}>{s}</p>
+              <p className={`mt-1.5 ${i <= stage ? "font-bold text-ok" : "text-subtle"}`}>{s}</p>
             </li>
           ))}
         </ol>

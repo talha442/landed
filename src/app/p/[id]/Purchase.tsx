@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { CheckIcon, InfoIcon, TruckIcon } from "@/components/icons";
+import { toast } from "sonner";
+import { InfoIcon, TruckIcon } from "@/components/icons";
 import { Amount, PriceSkeleton } from "@/components/Price";
 import { deliveryWindow, estimate, estimateOne, formatWindow, money } from "@/lib/shipping";
 import { MAX_QTY, useHydrated, useStore } from "@/lib/store";
@@ -32,7 +32,6 @@ export function Purchase({ product: p }: Props) {
   const router = useRouter();
   const [size, setSize] = useState<string | null>(null);
   const [qty, setQty] = useState(1);
-  const [added, setAdded] = useState(false);
   const [sizeError, setSizeError] = useState(false);
 
   const e = estimateOne(p.price, dest);
@@ -63,7 +62,7 @@ export function Purchase({ product: p }: Props) {
                 {p.discountPercentage >= 10 && <span className="text-2xl font-light text-deal">-{Math.round(p.discountPercentage)}%</span>}
                 <Amount usd={e.total} className="text-[34px]" />
               </div>
-              <p className="mt-1 text-sm text-muted">Total delivered to {dest.name}. No extra charges at checkout.</p>
+              <p className="mt-1 text-sm text-subtle">Total delivered to {dest.name}. No extra charges at checkout.</p>
               <dl className="mt-3 max-w-sm space-y-1 rounded-lg border border-line p-3 text-sm">
                 <Row label="Item price" value={money(e.items, dest)} />
                 <Row label={e.freeShipping ? "Shipping (free over " + money(dest.freeShippingOver!, dest) + ")" : "Shipping"} value={e.shipping ? money(e.shipping, dest) : "Free"} />
@@ -74,13 +73,13 @@ export function Purchase({ product: p }: Props) {
                 </div>
               </dl>
               {dest.freeShippingOver !== null && !e.freeShipping && (
-                <p className="mt-2 flex max-w-sm gap-1.5 text-xs text-muted">
+                <p className="mt-2 flex max-w-sm gap-1.5 text-xs text-subtle">
                   <InfoIcon className="mt-px size-3.5 shrink-0" />
                   <span>Free shipping on orders over {money(dest.freeShippingOver, dest)}. Your cart tracks how close you are.</span>
                 </p>
               )}
               {extraItemShipping > 0 && e.shipping > 0 && (
-                <p className="mt-2 flex max-w-sm gap-1.5 text-xs text-muted">
+                <p className="mt-2 flex max-w-sm gap-1.5 text-xs text-subtle">
                   <InfoIcon className="mt-px size-3.5 shrink-0" />
                   <span>
                     Shipping is charged per box. Each extra item in the same order adds only {money(extraItemShipping, dest)} shipping, so ordering together is cheaper.
@@ -111,7 +110,7 @@ export function Purchase({ product: p }: Props) {
         ) : (
           <>
             <Amount usd={estimate([{ price: p.price, qty }], dest).total} className="text-2xl" />
-            {qty > 1 && <p className="text-xs text-muted">for {qty}, shipped together in one box</p>}
+            {qty > 1 && <p className="text-xs text-subtle">for {qty}, shipped together in one box</p>}
             <p className="mt-2 flex items-start gap-1.5 text-sm">
               <TruckIcon className="mt-0.5 size-4 shrink-0" />
               <span>
@@ -120,7 +119,7 @@ export function Purchase({ product: p }: Props) {
             </p>
           </>
         )}
-        <p className={`mt-3 text-lg ${inStock ? (p.stock <= 5 ? "text-deal" : "text-ok") : "text-muted"}`}>
+        <p className={`mt-3 text-lg ${inStock ? (p.stock <= 5 ? "text-deal" : "text-ok") : "text-subtle"}`}>
           {inStock ? (p.stock <= 5 ? `Only ${p.stock} left in stock` : "In stock") : "Currently unavailable"}
         </p>
         {inStock && (
@@ -141,7 +140,10 @@ export function Purchase({ product: p }: Props) {
               className="btn-cta w-full"
               onClick={() => {
                 if (!commit()) return;
-                setAdded(true);
+                toast.success(qty > 1 ? `${qty} added to cart` : "Added to cart", {
+                  description: size ? `${p.title} · Size ${size}` : p.title,
+                  action: { label: "View cart", onClick: () => router.push("/cart") },
+                });
               }}
             >
               Add to cart
@@ -154,29 +156,19 @@ export function Purchase({ product: p }: Props) {
             >
               Buy now
             </button>
-            {added && (
-              <div className="rounded-md bg-[#f0faf8] p-2 text-sm" role="status">
-                <p className="flex items-center gap-1 font-bold text-ok">
-                  <CheckIcon /> Added to cart
-                </p>
-                <Link href="/cart" className="link text-xs">
-                  Go to cart
-                </Link>
-              </div>
-            )}
           </div>
         )}
         <dl className="mt-4 space-y-1 text-xs">
           <div className="flex gap-2">
-            <dt className="w-16 text-muted">Sold by</dt>
+            <dt className="w-16 text-subtle">Sold by</dt>
             <dd>{p.brand ?? "Marketplace seller"}</dd>
           </div>
           <div className="flex gap-2">
-            <dt className="w-16 text-muted">Returns</dt>
+            <dt className="w-16 text-subtle">Returns</dt>
             <dd>{p.returnPolicy}</dd>
           </div>
           <div className="flex gap-2">
-            <dt className="w-16 text-muted">Warranty</dt>
+            <dt className="w-16 text-subtle">Warranty</dt>
             <dd>{p.warranty}</dd>
           </div>
         </dl>
@@ -188,7 +180,7 @@ export function Purchase({ product: p }: Props) {
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between gap-4">
-      <dt className="text-muted">{label}</dt>
+      <dt className="text-subtle">{label}</dt>
       <dd>{value}</dd>
     </div>
   );

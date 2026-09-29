@@ -105,7 +105,7 @@ export function SignIn() {
           {step === "create" && (
             <form onSubmit={onCreate}>
               <h1 className="text-[28px] leading-tight font-normal">Create your account</h1>
-              <p className="mt-1 text-sm text-muted">Looks like you&apos;re new here.</p>
+              <p className="mt-1 text-sm text-subtle">Looks like you&apos;re new here.</p>
               {back}
               <label className="mt-4 block text-sm font-bold" htmlFor="name">
                 Your name
@@ -130,7 +130,7 @@ export function SignIn() {
             </form>
           )}
         </div>
-        <p className="mt-4 text-center text-xs text-muted">
+        <p className="mt-4 text-center text-xs text-subtle">
           Demo accounts live in this browser only. You don&apos;t need one to shop or check out.{" "}
           <Link href={next} className="link">
             Continue as guest

@@ -10,6 +10,7 @@ import { useHydrated } from "@/lib/store";
 import type { ProductSummary } from "@/lib/types";
 import { useDestination } from "@/lib/useDestination";
 import { XIcon } from "@/components/icons";
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 const SORTS = [
   { value: "", label: "Most relevant" },
@@ -187,7 +188,7 @@ export function SearchResults({
                 className="accent-link"
               />
               <span className="flex-1">{b}</span>
-              <span className="text-xs text-muted">{n}</span>
+              <span className="text-xs text-subtle">{n}</span>
             </label>
           ))}
         </FilterGroup>
@@ -207,12 +208,28 @@ export function SearchResults({
             </>
           )}
           {deptName && <> in {deptName}</>}
-          <span className="ml-2 text-xs text-muted">· No sponsored results</span>
+          <span className="ml-2 text-xs text-subtle">· No sponsored results</span>
         </p>
         <div className="flex items-center gap-2">
-          <button className="btn-ghost py-1.5 lg:hidden" onClick={() => setFiltersOpen((o) => !o)} aria-expanded={filtersOpen}>
-            Filters{activeCount > 0 && ` (${activeCount})`}
-          </button>
+          <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
+            <SheetTrigger asChild>
+              <button className="btn-ghost py-1.5 lg:hidden">Filters{activeCount > 0 && ` (${activeCount})`}</button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[85vw] max-w-sm gap-0 overflow-y-auto">
+              <SheetHeader className="border-b border-line">
+                <SheetTitle className="text-lg">Filters</SheetTitle>
+                <SheetDescription>
+                  {shown.length} {shown.length === 1 ? "result" : "results"}. Changes apply as you pick.
+                </SheetDescription>
+              </SheetHeader>
+              <div className="p-4">{filters}</div>
+              <SheetFooter className="sticky bottom-0 border-t border-line bg-white">
+                <button className="btn-cta w-full" onClick={() => setFiltersOpen(false)}>
+                  Show {shown.length} {shown.length === 1 ? "result" : "results"}
+                </button>
+              </SheetFooter>
+            </SheetContent>
+          </Sheet>
           <label className="flex items-center gap-2 text-sm">
             <span className="hidden sm:inline">Sort by</span>
             <select
@@ -234,9 +251,8 @@ export function SearchResults({
         <aside className="hidden w-60 shrink-0 lg:block">
           <div className="card sticky top-28 p-4">{filters}</div>
         </aside>
-        {filtersOpen && <div className="card mb-4 w-full p-4 lg:hidden">{filters}</div>}
 
-        <section className={`min-w-0 flex-1 ${filtersOpen ? "hidden lg:block" : ""}`} aria-label="Results">
+        <section className="min-w-0 flex-1" aria-label="Results">
           {activeCount > 0 && (
             <div className="mb-3 flex flex-wrap items-center gap-2 text-sm">
               {minRating > 0 && <Chip onClear={() => update((sp) => sp.delete("rating"))}>{`${minRating}★ & up`}</Chip>}
@@ -287,7 +303,7 @@ function FilterGroup({ title, hint, children }: { title: string; hint?: string; 
   return (
     <fieldset>
       <legend className="mb-2 font-bold">{title}</legend>
-      {hint && <p className="-mt-1 mb-2 text-xs text-muted">{hint}</p>}
+      {hint && <p className="-mt-1 mb-2 text-xs text-subtle">{hint}</p>}
       {children}
     </fieldset>
   );
@@ -304,7 +320,7 @@ function DeptLink({ q, slug, active, label, count }: { q: string; slug: string; 
       aria-current={active ? "page" : undefined}
     >
       <span>{label}</span>
-      {count !== undefined && <span className="text-xs font-normal text-muted">{count}</span>}
+      {count !== undefined && <span className="text-xs font-normal text-subtle">{count}</span>}
     </Link>
   );
 }
@@ -321,7 +337,7 @@ function PriceRange({ min, max, onApply }: { min: string; max: string; onApply: 
       }}
     >
       <input value={a} onChange={(e) => setA(e.target.value)} inputMode="numeric" placeholder="Min" className="field w-full px-2 py-1" aria-label="Minimum total price" />
-      <span className="text-muted">–</span>
+      <span className="text-subtle">–</span>
       <input value={b} onChange={(e) => setB(e.target.value)} inputMode="numeric" placeholder="Max" className="field w-full px-2 py-1" aria-label="Maximum total price" />
       <button className="btn-ghost shrink-0 px-3 py-1">Go</button>
     </form>
@@ -344,7 +360,7 @@ function EmptyState({ q, hasFilters }: { q: string; hasFilters: boolean }) {
   return (
     <div className="card p-10 text-center">
       <p className="text-lg font-bold">{hasFilters ? "Nothing matches these filters" : `No results for "${q}"`}</p>
-      <p className="mt-2 text-sm text-muted">
+      <p className="mt-2 text-sm text-subtle">
         {hasFilters ? "Try removing a filter above." : "Check the spelling, or try a broader word like \"phone\", \"shirt\" or \"kitchen\"."}
       </p>
       <Link href="/s" className="btn-ghost mt-4">
