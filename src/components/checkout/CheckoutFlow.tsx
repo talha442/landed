@@ -58,6 +58,7 @@ export function CheckoutFlow({ catalog }: { catalog: ProductSummary[] }) {
     return (
       <div className="container-page py-12">
         <EmptyState
+          headingLevel={1}
           icon={ShoppingBag}
           title="There's nothing to check out"
           body="Your cart is empty. Add something and come back, your details will be right here."
@@ -143,10 +144,12 @@ export function CheckoutFlow({ catalog }: { catalog: ProductSummary[] }) {
 
   return (
     <div className="container-page py-8">
+      <h1 className="sr-only">Checkout</h1>
       <CheckoutSteps current={step} />
 
       <div className="mt-8 grid items-start gap-6 lg:grid-cols-[1fr_380px]">
         {/* Mobile: the total is one tap away, never hidden. */}
+        <h2 className="sr-only lg:hidden">Your order</h2>
         <Accordion type="single" collapsible className="rounded-2xl border bg-card px-4 lg:hidden">
           <AccordionItem value="summary" className="border-b-0">
             <AccordionTrigger className="hover:no-underline">

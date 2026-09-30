@@ -51,7 +51,7 @@ export function Hero({ showcase }: { showcase: ProductSummary[] }) {
                     aria-checked={active}
                     onClick={() => setShipTo(d.code)}
                     className={cn(
-                      "rounded-full border px-3 py-1.5 text-sm transition-colors focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
+                      "rounded-full border px-3 py-1.5 text-sm transition-colors focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none",
                       active ? "border-foreground bg-foreground font-semibold text-background" : "bg-card hover:border-foreground/40",
                     )}
                   >

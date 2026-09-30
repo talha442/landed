@@ -77,6 +77,24 @@ What is it, is it any good, what will I pay, and when will it arrive. Each card 
 - **Search box:** suggestions show each product's delivered price, recent searches are remembered, and `/` jumps to search.
 - **Undo:** removing something from the cart or wishlist shows a toast with an **Undo** button.
 
+### 8. A mega menu in place of a 40-item drawer
+Each of the seven departments opens a full-width panel with three things: its categories with counts, three top-rated products with delivered prices, and that department's deals. It's built on shadcn's Navigation Menu (Radix), so it works with hover, touch and keyboard (arrow keys between departments, Enter to open, Tab into the panel, Esc to close). On mobile the same structure is an expandable list in the menu sheet. Category links land on a filtered results page (`?category=fashion&sub=Dresses`).
+
+### 9. Accessibility (target: WCAG 2.2 AA)
+- **Automated audit:** axe-core (WCAG 2.2 A and AA rules) runs on 16 pages plus 5 open states (mega menu, search suggestions, filter sheet, compare dialog, mobile menu), at desktop and phone widths. It started with 10 failing rules and now has 1, which comes from the menu library: Radix adds a hidden element that passes keyboard focus into an open panel. axe flags it because it is focusable but hidden.
+- **Keyboard:** a scripted keyboard-only run covers the skip link, mega menu, search suggestions, add to cart and the whole checkout, with no mouse.
+- **What was fixed along the way:**
+  - the search box's ARIA state (the library hard-codes `aria-expanded="true"`)
+  - duplicate IDs that left the mobile filters unlabelled
+  - missing h1s and skipped heading levels
+  - 16px checkboxes and 12px slider handles (now 24px)
+  - focus rings at 50% opacity (now full contrast)
+  - image links with no name
+  - form errors not linked to their fields
+  - "best value" in the compare view shown by colour alone
+- **Reflow:** no sideways scrolling at 320px on the nine pages checked.
+- **Display settings** at `/accessibility`: larger text, reduced motion, underlined links and higher contrast. They're saved in the browser and applied before first paint.
+
 ### What I cut, on purpose
 Prime, Prime Video, Gift Cards, Registry, Sell, advertising and sponsored placements, the cross-sell carousels, financing and store-card upsells, seller tools, and real payments or tax infrastructure. None of these help someone find something, decide and buy it. The brief rewards a finished core flow over a long feature list.
 

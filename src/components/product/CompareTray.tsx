@@ -40,7 +40,7 @@ export function CompareTray() {
                 <img src={p.thumbnail} alt={p.name} title={p.name} className="size-11 rounded-lg border bg-[#f3f2ee] object-contain p-0.5" />
                 <button
                   onClick={() => toggleCompare(p)}
-                  className="absolute -top-1.5 -right-1.5 rounded-full bg-foreground p-0.5 text-background"
+                  className="absolute -top-2.5 -right-2.5 flex size-6 items-center justify-center rounded-full border-2 border-card bg-foreground text-background"
                   aria-label={`Remove ${p.name} from compare`}
                 >
                   <X className="size-3" />
@@ -83,7 +83,7 @@ function CompareDialog({ items }: { items: ProductSummary[] }) {
         <table className="w-full min-w-[540px] table-fixed border-collapse text-sm">
           <thead>
             <tr>
-              <th className="w-28" />
+              <td className="w-28" />
               {rows.map(({ p }) => (
                 <th key={p.id} className="px-2 pb-3 text-left align-top font-normal">
                   <Link href={`/product/${p.id}`} className="group block">
@@ -100,6 +100,7 @@ function CompareDialog({ items }: { items: ProductSummary[] }) {
               {rows.map(({ p, e }) => (
                 <td key={p.id} className={cn("rounded-md text-base font-bold tabular", e.total === cheapest && best)}>
                   {money(e.total, dest)}
+                  {e.total === cheapest && <BestTag>Lowest</BestTag>}
                 </td>
               ))}
             </Row>
@@ -117,6 +118,7 @@ function CompareDialog({ items }: { items: ProductSummary[] }) {
               {rows.map(({ p, w }) => (
                 <td key={p.id} className={cn("rounded-md", w.maxDays === fastest && best)}>
                   {formatWindow(w)}
+                  {w.maxDays === fastest && <BestTag>Fastest</BestTag>}
                 </td>
               ))}
             </Row>
@@ -126,6 +128,7 @@ function CompareDialog({ items }: { items: ProductSummary[] }) {
                   <span className="flex items-center gap-1.5">
                     {p.rating.toFixed(1)} <Stars rating={p.rating} />
                   </span>
+                  {p.rating === bestRated && <BestTag>Top rated</BestTag>}
                 </td>
               ))}
             </Row>
@@ -140,7 +143,9 @@ function CompareDialog({ items }: { items: ProductSummary[] }) {
               ))}
             </Row>
             <tr className="border-t">
-              <th />
+              <th scope="row" className="w-28">
+                <span className="sr-only">Add to cart</span>
+              </th>
               {rows.map(({ p }) => (
                 <td key={p.id}>
                   {p.sizeKind ? (
@@ -169,4 +174,9 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
       {children}
     </tr>
   );
+}
+
+/** The best value in a row is marked in words too, not only by colour (WCAG 1.4.1). */
+function BestTag({ children }: { children: string }) {
+  return <span className="mt-0.5 block text-[11px] font-semibold tracking-wide uppercase">{children}</span>;
 }

@@ -6,7 +6,6 @@ import { useState } from "react";
 import { OrderCard } from "@/components/account/OrderBits";
 import { EmptyState } from "@/components/common/EmptyState";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { orderStatus } from "@/lib/orders";
 import { useCurrentUser, useStore } from "@/lib/store";
 
@@ -49,17 +48,21 @@ export function OrdersList() {
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-xl font-bold">Orders</h2>
-        <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
-          <TabsList className="h-10 rounded-full p-1">
-            {TABS.map((t) => (
-              <TabsTrigger key={t.value} value={t.value} className="rounded-full px-3">
-                {t.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
+        {/* A filter, not tabs: toggle buttons, so there are no tab panels to point at. */}
+        <div role="group" aria-label="Show orders" className="flex rounded-full bg-muted p-1">
+          {TABS.map((t) => (
+            <button
+              key={t.value}
+              aria-pressed={tab === t.value}
+              onClick={() => setTab(t.value)}
+              className="min-h-8 rounded-full px-3 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground aria-pressed:bg-card aria-pressed:text-foreground aria-pressed:shadow-sm"
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
       </div>
-      <div className="mt-5 space-y-3">
+      <div className="mt-5 space-y-3" aria-live="polite">
         {inTab.length ? (
           inTab.map((o) => <OrderCard key={o.id} order={o} href={`/account/orders/${o.id}`} />)
         ) : (

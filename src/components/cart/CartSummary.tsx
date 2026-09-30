@@ -4,7 +4,6 @@ import { ArrowRight, Lock, PiggyBank, Truck } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
 import { bundlingSaving, estimate, formatWindow, money, orderDeliveryWindow, type Speed } from "@/lib/shipping";
 import type { ResolvedLine } from "@/lib/useCartLines";
 import { useDestination } from "@/lib/useDestination";
@@ -22,8 +21,7 @@ export function OrderTotals({ lines, speed = "standard" }: { lines: ResolvedLine
       <Line label={`Items (${e.itemCount})`} value={money(e.items, dest)} />
       <Line label={`Shipping to ${dest.name}`} value={e.shipping ? money(e.shipping, dest) : "Free"} />
       <Line label={`${dest.dutyLabel} (est.)`} value={money(e.duties, dest)} />
-      <Separator className="my-3" />
-      <div className="flex items-baseline justify-between">
+      <div className="mt-3 flex items-baseline justify-between border-t pt-3">
         <dt className="font-semibold">Total</dt>
         <dd className="font-heading text-2xl font-extrabold tabular">{money(e.total, dest)}</dd>
       </div>

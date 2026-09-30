@@ -20,7 +20,7 @@ export function ShipToPicker({ className, compact }: { className?: string; compa
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         className={cn(
-          "flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-left text-sm hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none data-[state=open]:bg-muted",
+          "flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-left text-sm hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none data-[state=open]:bg-muted",
           className,
         )}
       >
@@ -56,7 +56,7 @@ export function ShipToPicker({ className, compact }: { className?: string; compa
                   if (!active) toast(`Now showing prices delivered to ${d.name}`, { description: `In ${d.currency}, with shipping and ${d.dutyLabel.toLowerCase()} included.` });
                 }}
                 className={cn(
-                  "flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
+                  "flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none",
                   active && "bg-brand-soft font-semibold text-brand hover:bg-brand-soft",
                 )}
               >

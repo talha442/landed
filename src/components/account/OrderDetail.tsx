@@ -16,7 +16,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { canCancel, orderStatus, type Order } from "@/lib/orders";
 import { getDestination, money } from "@/lib/shipping";
 import { useStore } from "@/lib/store";
@@ -60,7 +59,7 @@ export function OrderDetail({ order }: { order: Order }) {
         <ul className="mt-4 divide-y">
           {order.lines.map((l) => (
             <li key={`${l.productId}-${l.size ?? ""}`} className="flex items-center gap-4 py-3 first:pt-0">
-              <Link href={`/product/${l.productId}`} className="shrink-0 rounded-xl bg-[#f3f2ee] p-1">
+              <Link href={`/product/${l.productId}`} tabIndex={-1} aria-hidden className="shrink-0 rounded-xl bg-[#f3f2ee] p-1">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={l.thumbnail} alt="" className="size-16 object-contain mix-blend-multiply" />
               </Link>
@@ -113,8 +112,7 @@ export function OrderDetail({ order }: { order: Order }) {
               <dt>{dest.dutyLabel}</dt>
               <dd>{money(e.duties, dest)}</dd>
             </div>
-            <Separator className="my-1.5" />
-            <div className="flex justify-between font-bold">
+            <div className="mt-1.5 flex justify-between border-t pt-1.5 font-bold">
               <dt>{status === "Cancelled" ? "Refunded" : "Paid"}</dt>
               <dd>{money(e.total, dest)}</dd>
             </div>

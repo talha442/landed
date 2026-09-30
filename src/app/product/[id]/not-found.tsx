@@ -7,6 +7,7 @@ export default function ProductNotFound() {
   return (
     <div className="container-page py-16">
       <EmptyState
+        headingLevel={1}
         icon={PackageX}
         title="We couldn't find that product"
         body="The link may be broken, or the product is no longer listed. Try searching for it instead."

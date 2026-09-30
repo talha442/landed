@@ -28,6 +28,7 @@ export function Confirmation({ id }: { id: string }) {
     return (
       <div className="container-page py-12">
         <EmptyState
+          headingLevel={1}
           icon={PackageSearch}
           title="We can't find that order"
           body="Orders are stored in the browser they were placed in. If you placed it on another device, sign in there to see it."

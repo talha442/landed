@@ -44,7 +44,7 @@ export function WishlistToggle({ productId, name, variant = "icon", className }:
       aria-pressed={on}
       aria-label={on ? `Remove ${name} from wishlist` : `Save ${name} to wishlist`}
       className={cn(
-        "flex size-9 items-center justify-center rounded-full bg-card/90 text-foreground shadow-sm ring-1 ring-black/5 backdrop-blur transition hover:scale-105 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
+        "flex size-9 items-center justify-center rounded-full bg-card/90 text-foreground shadow-sm ring-1 ring-black/5 backdrop-blur transition hover:scale-105 focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none",
         className,
       )}
     >

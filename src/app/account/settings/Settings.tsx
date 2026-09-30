@@ -1,6 +1,7 @@
 "use client";
 
 import { LogOut, RotateCcw } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -89,6 +90,18 @@ export function Settings() {
               ))}
             </SelectContent>
           </Select>
+        </CardContent>
+      </Card>
+
+      <Card className="rounded-3xl ring-border">
+        <CardHeader>
+          <CardTitle className="font-heading text-base font-bold">Display</CardTitle>
+          <CardDescription>Text size, reduced motion, underlined links and higher contrast.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button asChild variant="outline">
+            <Link href="/accessibility">Accessibility settings</Link>
+          </Button>
         </CardContent>
       </Card>
 

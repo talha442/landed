@@ -22,9 +22,9 @@ export function CartItem({ line, index }: { line: ResolvedLine; index: number })
 
   return (
     <li className="flex gap-4 py-5 first:pt-0 last:pb-0 sm:gap-5">
-      <Link href={`/product/${p.id}`} className="shrink-0 overflow-hidden rounded-2xl bg-[#f3f2ee]">
+      <Link href={`/product/${p.id}`} tabIndex={-1} aria-hidden className="shrink-0 overflow-hidden rounded-2xl bg-[#f3f2ee]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={p.thumbnail} alt={p.name} className="size-24 object-contain p-2 mix-blend-multiply sm:size-28" />
+        <img src={p.thumbnail} alt="" className="size-24 object-contain p-2 mix-blend-multiply sm:size-28" />
       </Link>
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex items-start justify-between gap-3">

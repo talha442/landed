@@ -32,6 +32,7 @@ export function SiteFooter() {
           <FooterLink href="/search?sort=total">Sort by total cost</FooterLink>
           <FooterLink href="/search?sort=fastest">Fastest delivery</FooterLink>
           <FooterLink href="/search?sort=discount">Deals</FooterLink>
+          <FooterLink href="/accessibility">Accessibility</FooterLink>
         </FooterCol>
       </div>
       <div className="border-t">

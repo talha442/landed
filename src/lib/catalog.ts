@@ -134,3 +134,38 @@ export function trending(n = 8) {
 export function deals(n = 8) {
   return [...products].filter((p) => p.discount && p.stock > 0).sort((a, b) => (b.discount ?? 0) - (a.discount ?? 0)).slice(0, n);
 }
+
+export type MenuDepartment = {
+  slug: string;
+  name: string;
+  blurb: string;
+  count: number;
+  subcategories: { name: string; count: number }[];
+  topPicks: Pick<Product, "id" | "name" | "thumbnail" | "price" | "rating" | "brand">[];
+  deals: number;
+  maxDiscount: number;
+};
+
+/** Everything the header's mega menu shows, computed once on the server. */
+export function menuData(): MenuDepartment[] {
+  return departments.map((d) => {
+    const items = products.filter((p) => p.category === d.slug);
+    const subs = new Map<string, number>();
+    for (const p of items) subs.set(p.subcategory, (subs.get(p.subcategory) ?? 0) + 1);
+    const onSale = items.filter((p) => p.discount && p.stock > 0);
+    return {
+      slug: d.slug,
+      name: d.name,
+      blurb: d.blurb,
+      count: items.length,
+      subcategories: [...subs.entries()].map(([name, count]) => ({ name, count })),
+      topPicks: items
+        .filter((p) => p.stock > 0)
+        .sort((a, b) => b.rating - a.rating || b.price - a.price)
+        .slice(0, 3)
+        .map(({ id, name, thumbnail, price, rating, brand }) => ({ id, name, thumbnail, price, rating, brand })),
+      deals: onSale.length,
+      maxDiscount: Math.max(0, ...onSale.map((p) => p.discount ?? 0)),
+    };
+  });
+}

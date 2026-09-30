@@ -44,7 +44,7 @@ export function SizePicker({ kind, value, onChange, error }: { kind: "apparel" |
         </p>
         {kind === "apparel" && <SizeFinder onPick={onChange} />}
       </div>
-      <div className="mt-2.5 flex flex-wrap gap-2" role="radiogroup" aria-labelledby="size-label" aria-invalid={error || undefined}>
+      <div className="mt-2.5 flex flex-wrap gap-2" role="radiogroup" aria-labelledby="size-label" aria-required aria-describedby={error && !value ? "size-error" : undefined}>
         {options.map((o) => (
           <button
             key={o.value}
@@ -52,7 +52,7 @@ export function SizePicker({ kind, value, onChange, error }: { kind: "apparel" |
             aria-checked={value === o.value}
             onClick={() => onChange(o.value)}
             className={cn(
-              "min-w-14 rounded-xl border bg-card px-3.5 py-2 text-sm font-semibold transition-colors focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
+              "min-w-14 rounded-xl border bg-card px-3.5 py-2 text-sm font-semibold transition-colors focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none",
               value === o.value ? "border-foreground bg-foreground text-background" : "hover:border-foreground/40",
               error && !value && "border-destructive/60",
             )}
@@ -63,7 +63,7 @@ export function SizePicker({ kind, value, onChange, error }: { kind: "apparel" |
         ))}
       </div>
       {error && !value && (
-        <p className="mt-2 text-sm font-medium text-destructive" role="alert">
+        <p id="size-error" className="mt-2 text-sm font-medium text-destructive" role="alert">
           Choose a size to continue.
         </p>
       )}

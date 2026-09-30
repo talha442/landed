@@ -7,6 +7,7 @@ export default function NotFound() {
   return (
     <div className="container-page py-16">
       <EmptyState
+        headingLevel={1}
         icon={Compass}
         title="This page doesn't exist"
         body="The link may be broken or the page has moved. Search for what you need, or head back home."

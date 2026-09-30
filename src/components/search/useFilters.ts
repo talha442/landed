@@ -5,6 +5,7 @@ import { useCallback } from "react";
 
 export type Filters = {
   categories: string[];
+  subcategories: string[];
   brands: string[];
   rating: number;
   within: number;
@@ -14,7 +15,7 @@ export type Filters = {
   page: number;
 };
 
-export const FILTER_KEYS = ["category", "brand", "rating", "by", "min", "max", "page"] as const;
+export const FILTER_KEYS = ["category", "sub", "brand", "rating", "by", "min", "max", "page"] as const;
 
 /**
  * Filters live in the URL (shareable, back-button friendly) but are written with the
@@ -31,6 +32,7 @@ export function useFilters() {
 
   const filters: Filters = {
     categories: params.getAll("category"),
+    subcategories: params.getAll("sub"),
     brands: params.getAll("brand"),
     rating: num("rating") ?? 0,
     within: num("by") ?? 0,
@@ -51,7 +53,7 @@ export function useFilters() {
     [pathname],
   );
 
-  const setList = (key: "category" | "brand", values: string[]) =>
+  const setList = (key: "category" | "sub" | "brand", values: string[]) =>
     update((sp) => {
       sp.delete(key);
       values.forEach((v) => sp.append(key, v));
@@ -62,7 +64,7 @@ export function useFilters() {
 
   const clearAll = () => update((sp) => FILTER_KEYS.forEach((k) => sp.delete(k)));
 
-  const activeCount = filters.categories.length + filters.brands.length + (filters.rating ? 1 : 0) + (filters.within ? 1 : 0) + (filters.min !== null || filters.max !== null ? 1 : 0);
+  const activeCount = filters.categories.length + filters.subcategories.length + filters.brands.length + (filters.rating ? 1 : 0) + (filters.within ? 1 : 0) + (filters.min !== null || filters.max !== null ? 1 : 0);
 
   return { filters, update, setList, setValue, clearAll, activeCount };
 }

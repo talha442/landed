@@ -9,6 +9,15 @@ import type { ProductSummary } from "./types";
 
 export type { Address, Order };
 
+export type DisplayPrefs = {
+  text: "default" | "large" | "larger";
+  reduceMotion: boolean;
+  underlineLinks: boolean;
+  highContrast: boolean;
+};
+
+export const DEFAULT_PREFS: DisplayPrefs = { text: "default", reduceMotion: false, underlineLinks: false, highContrast: false };
+
 export type CartLine = { key: string; productId: string; qty: number; size?: string };
 
 export type User = {
@@ -33,7 +42,9 @@ type State = {
   orders: Order[];
   /** Snapshots, so the compare tray works on any page without loading the catalog. */
   compare: ProductSummary[];
+  prefs: DisplayPrefs;
 
+  setPrefs: (patch: Partial<DisplayPrefs>) => void;
   setShipTo: (code: string) => void;
   addToCart: (productId: string, qty?: number, size?: string) => void;
   setQty: (key: string, qty: number) => void;
@@ -84,6 +95,7 @@ const initial = () => ({
   recentSearches: [],
   currentEmail: null,
   compare: [],
+  prefs: DEFAULT_PREFS,
   ...demoState(),
 });
 
@@ -93,6 +105,7 @@ export const useStore = create<State>()(
       ...initial(),
 
       setShipTo: (code) => set({ shipTo: code }),
+      setPrefs: (patch) => set((s) => ({ prefs: { ...s.prefs, ...patch } })),
 
       addToCart: (productId, qty = 1, size) =>
         set((s) => {
@@ -208,7 +221,7 @@ export const useStore = create<State>()(
       },
       clearCompare: () => set({ compare: [] }),
 
-      resetDemo: () => set(initial()),
+      resetDemo: () => set((s) => ({ ...initial(), prefs: s.prefs })),
     }),
     {
       name: "landed",

@@ -31,6 +31,7 @@ export function CartView({ catalog, suggestions }: { catalog: ProductSummary[]; 
     <div className="container-page py-8">
       {lines.length === 0 ? (
         <EmptyState
+          headingLevel={1}
           icon={ShoppingBag}
           title="Your cart is empty"
           body="Anything you add shows its delivered price, so the total here is the total you'll pay. Nothing extra at checkout."
@@ -94,7 +95,7 @@ function SavedItem({ line }: { line: ResolvedLine }) {
   const p = line.product;
   return (
     <li className="flex flex-col rounded-2xl border bg-card p-3">
-      <Link href={`/product/${p.id}`} className="overflow-hidden rounded-xl bg-[#f3f2ee]">
+      <Link href={`/product/${p.id}`} tabIndex={-1} aria-hidden className="overflow-hidden rounded-xl bg-[#f3f2ee]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={p.thumbnail} alt="" className="aspect-square w-full object-contain p-3 mix-blend-multiply" />
       </Link>
@@ -116,7 +117,15 @@ function SavedItem({ line }: { line: ResolvedLine }) {
         >
           Move to cart
         </Button>
-        <Button size="sm" variant="ghost" onClick={() => removeSaved(line.key)} aria-label={`Remove ${p.name} from saved items`}>
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => {
+            removeSaved(line.key);
+            toast("Removed from saved items", { description: p.name, action: { label: "Undo", onClick: () => useStore.setState((s) => ({ saved: [line, ...s.saved] })) } });
+          }}
+          aria-label={`Remove ${p.name} from saved items`}
+        >
           Remove
         </Button>
       </div>

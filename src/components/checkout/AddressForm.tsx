@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { cloneElement, isValidElement, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -95,18 +95,24 @@ export function AddressForm({
 }
 
 export function Field({ id, label, optional, hint, error, className, children }: { id: string; label: string; optional?: boolean; hint?: string; error?: string; className?: string; children: React.ReactNode }) {
+  // Tie the message to the control so screen readers read it with the field (WCAG 1.3.1, 3.3.1).
+  const msgId = error || hint ? `${id}-msg` : undefined;
+  const control =
+    msgId && isValidElement<{ "aria-describedby"?: string }>(children) ? cloneElement(children, { "aria-describedby": msgId }) : children;
   return (
     <div className={cn("space-y-1.5", className)}>
       <Label htmlFor={id}>
         {label} {optional && <span className="font-normal text-muted-foreground">(optional)</span>}
       </Label>
-      {children}
+      {control}
       {error ? (
-        <p className="text-xs font-medium text-destructive" role="alert">
+        <p id={msgId} className="text-xs font-medium text-destructive" role="alert">
           {error}
         </p>
       ) : hint ? (
-        <p className="text-xs text-muted-foreground">{hint}</p>
+        <p id={msgId} className="text-xs text-muted-foreground">
+          {hint}
+        </p>
       ) : null}
     </div>
   );

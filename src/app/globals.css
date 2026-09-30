@@ -150,3 +150,50 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ---------------------------------------------------------------- accessibility */
+
+/* Every focusable thing gets a visible focus ring, even ones without their own
+   (components that style focus themselves override this in the utilities layer). */
+@layer base {
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  /* Keep focused elements clear of the sticky header (WCAG 2.4.11 Focus Not Obscured). */
+  html {
+    scroll-padding-top: 11rem;
+  }
+  @media (min-width: 768px) {
+    html {
+      scroll-padding-top: 8.5rem;
+    }
+  }
+}
+
+/* User display preferences, set on <html> from the Accessibility page. */
+html[data-text="large"] {
+  font-size: 112.5%;
+}
+html[data-text="larger"] {
+  font-size: 125%;
+}
+html[data-motion="reduce"] *,
+html[data-motion="reduce"] *::before,
+html[data-motion="reduce"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+html[data-links="underline"] main a:not([data-slot="button"]):not([role="button"]) {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+html[data-contrast="high"] {
+  --muted-foreground: #3d3b37;
+  --border: #a9a59c;
+  --input: #8d897f;
+  --brand: #064d39;
+  --ring: #064d39;
+}

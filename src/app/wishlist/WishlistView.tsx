@@ -60,7 +60,7 @@ export function WishlistView({ catalog, suggestions }: { catalog: ProductSummary
         <ul className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((p) => (
             <li key={p.id} className="flex gap-4 rounded-3xl border bg-card p-4">
-              <Link href={`/product/${p.id}`} className="shrink-0 overflow-hidden rounded-2xl bg-[#f3f2ee]">
+              <Link href={`/product/${p.id}`} tabIndex={-1} aria-hidden className="shrink-0 overflow-hidden rounded-2xl bg-[#f3f2ee]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={p.thumbnail} alt="" className="size-28 object-contain p-2 mix-blend-multiply" />
               </Link>

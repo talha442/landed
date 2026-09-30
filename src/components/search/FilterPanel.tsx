@@ -12,6 +12,7 @@ import type { Filters } from "./useFilters";
 
 export type Facets = {
   categories: { slug: string; name: string; count: number }[];
+  subcategories: { name: string; count: number }[];
   brands: { name: string; count: number }[];
   /** Delivered-total bounds for the current results, in local currency. */
   priceRange: [number, number];
@@ -21,7 +22,7 @@ type Props = {
   facets: Facets;
   filters: Filters;
   dest: Destination;
-  setList: (key: "category" | "brand", values: string[]) => void;
+  setList: (key: "category" | "sub" | "brand", values: string[]) => void;
   setValue: (key: string, value: string | number | null) => void;
   setPrice: (min: number | null, max: number | null) => void;
 };
@@ -38,12 +39,12 @@ export function FilterPanel({ facets, filters, dest, setList, setValue, setPrice
   // Rendered twice (sidebar and mobile sheet), so ids must be unique per instance
   // or labels point at the hidden copy and the visible controls lose their names.
   const uid = useId();
-  const toggle = (key: "category" | "brand", list: string[], v: string, on: boolean) => setList(key, on ? [...list, v] : list.filter((x) => x !== v));
+  const toggle = (key: "category" | "sub" | "brand", list: string[], v: string, on: boolean) => setList(key, on ? [...list, v] : list.filter((x) => x !== v));
   const [showAllBrands, setShowAllBrands] = useState(false);
   const brands = showAllBrands ? facets.brands : facets.brands.slice(0, 6);
 
   return (
-    <Accordion type="multiple" defaultValue={["category", "price", "rating", "delivery", "brand"]} className="w-full">
+    <Accordion type="multiple" defaultValue={["category", "sub", "price", "rating", "delivery", "brand"]} className="w-full">
       <AccordionItem value="category">
         <AccordionTrigger className="text-sm font-semibold hover:no-underline">Department</AccordionTrigger>
         <AccordionContent className="space-y-2.5">
@@ -51,7 +52,7 @@ export function FilterPanel({ facets, filters, dest, setList, setValue, setPrice
             const id = `${uid}-cat-${c.slug}`;
             return (
               <div key={c.slug} className="flex items-center gap-2.5">
-                <Checkbox id={id} checked={filters.categories.includes(c.slug)} onCheckedChange={(v) => toggle("category", filters.categories, c.slug, v === true)} />
+                <Checkbox className="size-6" id={id} checked={filters.categories.includes(c.slug)} onCheckedChange={(v) => toggle("category", filters.categories, c.slug, v === true)} />
                 <Label htmlFor={id} className="flex-1 cursor-pointer font-normal">
                   {c.name}
                 </Label>
@@ -61,6 +62,26 @@ export function FilterPanel({ facets, filters, dest, setList, setValue, setPrice
           })}
         </AccordionContent>
       </AccordionItem>
+
+      {facets.subcategories.length > 1 && (
+        <AccordionItem value="sub">
+          <AccordionTrigger className="text-sm font-semibold hover:no-underline">Type</AccordionTrigger>
+          <AccordionContent className="space-y-2.5">
+            {facets.subcategories.map((s) => {
+              const id = `${uid}-sub-${s.name}`;
+              return (
+                <div key={s.name} className="flex items-center gap-2.5">
+                  <Checkbox className="size-6" id={id} checked={filters.subcategories.includes(s.name)} onCheckedChange={(v) => toggle("sub", filters.subcategories, s.name, v === true)} />
+                  <Label htmlFor={id} className="flex-1 cursor-pointer font-normal">
+                    {s.name}
+                  </Label>
+                  <span className="text-xs text-muted-foreground tabular">{s.count}</span>
+                </div>
+              );
+            })}
+          </AccordionContent>
+        </AccordionItem>
+      )}
 
       <AccordionItem value="price">
         <AccordionTrigger className="text-sm font-semibold hover:no-underline">Delivered price</AccordionTrigger>
@@ -75,7 +96,7 @@ export function FilterPanel({ facets, filters, dest, setList, setValue, setPrice
           <RadioGroup value={String(filters.rating)} onValueChange={(v) => setValue("rating", Number(v) || null)} className="gap-2.5">
             {RATINGS.map((r) => (
               <div key={r.value} className="flex items-center gap-2.5">
-                <RadioGroupItem value={r.value} id={`${uid}-rating-${r.value}`} />
+                <RadioGroupItem className="size-6" value={r.value} id={`${uid}-rating-${r.value}`} />
                 <Label htmlFor={`${uid}-rating-${r.value}`} className="flex cursor-pointer items-center gap-1 font-normal">
                   {r.value !== "0" && <Star className="size-3.5 fill-star text-star" />}
                   {r.label}
@@ -97,7 +118,7 @@ export function FilterPanel({ facets, filters, dest, setList, setValue, setPrice
               { v: "0", l: "Any time" },
             ].map((o) => (
               <div key={o.v} className="flex items-center gap-2.5">
-                <RadioGroupItem value={o.v} id={`${uid}-by-${o.v}`} />
+                <RadioGroupItem className="size-6" value={o.v} id={`${uid}-by-${o.v}`} />
                 <Label htmlFor={`${uid}-by-${o.v}`} className="cursor-pointer font-normal">
                   {o.l}
                 </Label>
@@ -115,7 +136,7 @@ export function FilterPanel({ facets, filters, dest, setList, setValue, setPrice
               const id = `${uid}-brand-${b.name}`;
               return (
                 <div key={b.name} className="flex items-center gap-2.5">
-                  <Checkbox id={id} checked={filters.brands.includes(b.name)} onCheckedChange={(v) => toggle("brand", filters.brands, b.name, v === true)} />
+                  <Checkbox className="size-6" id={id} checked={filters.brands.includes(b.name)} onCheckedChange={(v) => toggle("brand", filters.brands, b.name, v === true)} />
                   <Label htmlFor={id} className="flex-1 cursor-pointer font-normal">
                     {b.name}
                   </Label>

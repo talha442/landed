@@ -54,23 +54,30 @@ export function SearchView({ q, results }: { q: string; results: ProductSummary[
     [results, dest],
   );
 
-  const inCategories = useMemo(
+  const inDepartments = useMemo(
     () => (filters.categories.length ? enriched.filter((x) => filters.categories.includes(x.p.category)) : enriched),
     [enriched, filters.categories],
+  );
+  const inCategories = useMemo(
+    () => (filters.subcategories.length ? inDepartments.filter((x) => filters.subcategories.includes(x.p.subcategory)) : inDepartments),
+    [inDepartments, filters.subcategories],
   );
 
   const facets: Facets = useMemo(() => {
     const catCounts = new Map<string, number>();
     for (const { p } of enriched) catCounts.set(p.category, (catCounts.get(p.category) ?? 0) + 1);
+    const subCounts = new Map<string, number>();
+    for (const { p } of inDepartments) subCounts.set(p.subcategory, (subCounts.get(p.subcategory) ?? 0) + 1);
     const brandCounts = new Map<string, number>();
     for (const { p } of inCategories) if (p.brand) brandCounts.set(p.brand, (brandCounts.get(p.brand) ?? 0) + 1);
     const totals = inCategories.map((x) => x.total);
     return {
       categories: departments.filter((d) => catCounts.has(d.slug)).map((d) => ({ slug: d.slug, name: d.name, count: catCounts.get(d.slug)! })),
+      subcategories: [...subCounts.entries()].map(([name, count]) => ({ name, count })),
       brands: [...brandCounts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([name, count]) => ({ name, count })),
       priceRange: totals.length ? [Math.floor(Math.min(...totals)), Math.ceil(Math.max(...totals))] : [0, 0],
     };
-  }, [enriched, inCategories]);
+  }, [enriched, inDepartments, inCategories]);
 
   const shown = useMemo(() => {
     const list = inCategories.filter(
@@ -105,7 +112,8 @@ export function SearchView({ q, results }: { q: string; results: ProductSummary[
     });
 
   const singleDept = filters.categories.length === 1 ? getDepartment(filters.categories[0]) : undefined;
-  const title = q ? `“${q}”` : singleDept ? singleDept.name : filters.sort === "discount" ? "Deals" : "All products";
+  const singleSub = filters.subcategories.length === 1 ? filters.subcategories[0] : undefined;
+  const title = q ? `“${q}”` : singleSub ? singleSub : singleDept ? singleDept.name : filters.sort === "discount" ? "Deals" : "All products";
   const invalid = q.trim().length > 0 && tokens(q).length === 0;
 
   const panel = <FilterPanel facets={facets} filters={filters} dest={dest} setList={setList} setValue={setValue} setPrice={setPrice} />;
@@ -169,7 +177,7 @@ export function SearchView({ q, results }: { q: string; results: ProductSummary[
         <aside className="hidden w-60 shrink-0 md:block" aria-label="Filters">
           <div className="sticky top-32">
             <div className="flex items-center justify-between pb-1">
-              <p className="font-heading font-bold">Filters</p>
+              <h2 className="font-heading font-bold">Filters</h2>
               {activeCount > 0 && (
                 <button onClick={clearAll} className="text-sm font-semibold text-muted-foreground hover:text-foreground">
                   Clear all
@@ -180,7 +188,10 @@ export function SearchView({ q, results }: { q: string; results: ProductSummary[
           </div>
         </aside>
 
-        <section className="min-w-0 flex-1" aria-label="Results">
+        <section className="min-w-0 flex-1" aria-labelledby="results-h">
+          <h2 id="results-h" className="sr-only">
+            Results
+          </h2>
           {activeCount > 0 && <ActiveFilters filters={filters} currency={dest.currency} setList={setList} setValue={setValue} setPrice={setPrice} clearAll={clearAll} />}
 
           {!hydrated && (filters.min !== null || filters.max !== null) ? (
@@ -230,7 +241,7 @@ function ActiveFilters({
 }: {
   filters: ReturnType<typeof useFilters>["filters"];
   currency: string;
-  setList: (key: "category" | "brand", values: string[]) => void;
+  setList: (key: "category" | "sub" | "brand", values: string[]) => void;
   setValue: (key: string, value: string | number | null) => void;
   setPrice: (min: number | null, max: number | null) => void;
   clearAll: () => void;
@@ -238,6 +249,7 @@ function ActiveFilters({
   const fmt = (n: number) => new Intl.NumberFormat("en-US").format(n);
   const chips: { label: string; clear: () => void }[] = [
     ...filters.categories.map((c) => ({ label: getDepartment(c)?.name ?? c, clear: () => setList("category", filters.categories.filter((x) => x !== c)) })),
+    ...filters.subcategories.map((s) => ({ label: s, clear: () => setList("sub", filters.subcategories.filter((x) => x !== s)) })),
     ...filters.brands.map((b) => ({ label: b, clear: () => setList("brand", filters.brands.filter((x) => x !== b)) })),
     ...(filters.rating ? [{ label: `${filters.rating}★ & up`, clear: () => setValue("rating", null) }] : []),
     ...(filters.within ? [{ label: `Arrives within ${filters.within} days`, clear: () => setValue("by", null) }] : []),
@@ -250,7 +262,7 @@ function ActiveFilters({
       {chips.map((c) => (
         <Badge key={c.label} variant="outline" className="h-8 gap-1 rounded-full bg-card pr-1 pl-3 text-[13px] font-medium">
           {c.label}
-          <button onClick={c.clear} className="rounded-full p-1 hover:bg-muted" aria-label={`Remove filter: ${c.label}`}>
+          <button onClick={c.clear} className="flex size-6 items-center justify-center rounded-full hover:bg-muted" aria-label={`Remove filter: ${c.label}`}>
             <X className="size-3.5" />
           </button>
         </Badge>

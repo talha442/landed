@@ -3,7 +3,7 @@
 import { AlertCircle, Loader2, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { cloneElement, isValidElement, useState } from "react";
 import { toast } from "sonner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,9 @@ function Shell({ title, description, children, footer }: { title: string; descri
     <div className="container-page flex justify-center py-12 sm:py-16">
       <Card className="w-full max-w-md gap-6 rounded-3xl py-8 shadow-xl shadow-black/5 ring-border">
         <CardHeader className="px-7 sm:px-8">
-          <CardTitle className="font-heading text-2xl font-extrabold">{title}</CardTitle>
+          <CardTitle>
+            <h1 className="font-heading text-2xl font-extrabold">{title}</h1>
+          </CardTitle>
           <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent className="px-7 sm:px-8">{children}</CardContent>
@@ -110,7 +112,7 @@ export function SignInForm() {
       <DemoButton next={next} />
       <form onSubmit={submit} noValidate className="space-y-4">
         {error && (
-          <Alert variant="destructive">
+          <Alert variant="destructive" id="signin-error">
             <AlertCircle />
             <AlertTitle>Couldn&apos;t sign you in</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
@@ -118,7 +120,7 @@ export function SignInForm() {
         )}
         <div className="space-y-1.5">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} className="h-11 rounded-xl" />
+          <Input id="email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} aria-invalid={!!error || undefined} aria-describedby={error ? "signin-error" : undefined} className="h-11 rounded-xl" />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="password">Password</Label>
@@ -194,16 +196,21 @@ export function SignUpForm() {
 }
 
 function FieldRow({ id, label, error, hint, children }: { id: string; label: string; error?: string; hint?: string; children: React.ReactNode }) {
+  const msgId = error || hint ? `${id}-msg` : undefined;
+  const control =
+    msgId && isValidElement<{ "aria-describedby"?: string }>(children) ? cloneElement(children, { "aria-describedby": msgId }) : children;
   return (
     <div className="space-y-1.5">
       <Label htmlFor={id}>{label}</Label>
-      {children}
+      {control}
       {error ? (
-        <p className="text-xs font-medium text-destructive" role="alert">
+        <p id={msgId} className="text-xs font-medium text-destructive" role="alert">
           {error}
         </p>
       ) : hint ? (
-        <p className="text-xs text-muted-foreground">{hint}</p>
+        <p id={msgId} className="text-xs text-muted-foreground">
+          {hint}
+        </p>
       ) : null}
     </div>
   );

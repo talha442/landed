@@ -42,6 +42,12 @@ export function SearchBox({ index, className, autoFocus }: { index: SearchEntry[
     setQ(urlQ);
   }
 
+  // cmdk hard-codes aria-expanded="true" on its input. Keep it truthful for screen readers.
+  // (React leaves the attribute alone after mount because cmdk's value never changes.)
+  useEffect(() => {
+    inputRef.current?.setAttribute("aria-expanded", String(open));
+  }, [open]);
+
   // "/" jumps to search from anywhere, like most search-first products.
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -75,6 +81,7 @@ export function SearchBox({ index, className, autoFocus }: { index: SearchEntry[
     <Command
       shouldFilter={false}
       loop
+      label="Search products"
       className={cn("relative h-auto overflow-visible rounded-full! bg-transparent p-0", className)}
       onKeyDown={(e) => {
         if (e.key === "Escape") {
@@ -101,7 +108,6 @@ export function SearchBox({ index, className, autoFocus }: { index: SearchEntry[
           onBlur={() => setTimeout(() => setOpen(false), 120)}
           autoFocus={autoFocus}
           placeholder="Search products, brands and more"
-          aria-label="Search products"
           className="h-full min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-muted-foreground"
         />
         {q && (
@@ -123,8 +129,10 @@ export function SearchBox({ index, className, autoFocus }: { index: SearchEntry[
         </kbd>
       </div>
 
-      {open && (
+      {/* Always in the DOM (hidden when closed) so the input's aria-controls points at something real. */}
+      {(
         <div
+          hidden={!open}
           className="absolute inset-x-0 top-[calc(100%+8px)] z-50 overflow-hidden rounded-2xl border bg-popover p-1.5 shadow-xl shadow-black/5 animate-in fade-in-0 slide-in-from-top-1"
           onMouseDown={(e) => e.preventDefault() /* keep focus in the input while clicking */}
         >

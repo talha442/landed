@@ -64,6 +64,7 @@ export function PaymentForm({ value, onChange, errors }: { value: CardDetails; o
               value={value.number}
               onChange={(e) => onChange({ ...value, number: formatNumber(e.target.value) })}
               aria-invalid={!!errors.number || undefined}
+              aria-describedby={errors.number ? "card-number-msg" : undefined}
               className="h-11 rounded-xl pr-10 font-mono tabular"
             />
             <CreditCard className="pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 text-muted-foreground" />

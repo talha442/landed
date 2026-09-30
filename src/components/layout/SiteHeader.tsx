@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Lock } from "lucide-react";
 import { SearchBox } from "@/components/search/SearchBox";
-import { departments } from "@/lib/catalog-meta";
+import { MegaMenu } from "@/components/navigation/MegaMenu";
+import type { MenuDepartment } from "@/lib/catalog";
 import type { SearchEntry } from "@/lib/types";
-import { cn } from "@/lib/utils";
 import { AccountMenu, CartButton, WishlistButton } from "./HeaderActions";
 import { Logo } from "./Logo";
 import { MobileNav } from "./MobileNav";
@@ -17,14 +17,14 @@ import { ShipToPicker } from "./ShipToPicker";
  * second nav bar; this keeps search as the obvious first move and pushes departments
  * into a single quiet row below.
  */
-export function SiteHeader({ index }: { index: SearchEntry[] }) {
+export function SiteHeader({ index, menu }: { index: SearchEntry[]; menu: MenuDepartment[] }) {
   const pathname = usePathname();
   if (pathname.startsWith("/checkout")) return <CheckoutHeader />;
 
   return (
     <header className="sticky top-0 z-40 border-b bg-background/85 backdrop-blur-md supports-[backdrop-filter]:bg-background/75">
       <div className="container-page flex h-16 items-center gap-2 md:gap-4">
-        <MobileNav />
+        <MobileNav menu={menu} />
         <Logo />
         <ShipToPicker className="ml-2 hidden lg:flex" />
         <SearchBox index={index} className="mx-2 hidden max-w-2xl flex-1 md:flex" />
@@ -38,40 +38,8 @@ export function SiteHeader({ index }: { index: SearchEntry[] }) {
         <SearchBox index={index} />
         <ShipToPicker compact className="-ml-2.5 mt-1.5 py-1 text-xs" />
       </div>
-      <DepartmentsBar />
+      <MegaMenu menu={menu} />
     </header>
-  );
-}
-
-function DepartmentsBar() {
-  const pathname = usePathname();
-  const params = useSearchParams();
-  const current = pathname === "/search" ? params.get("category") : null;
-  return (
-    <nav aria-label="Departments" className="hidden border-t md:block">
-      <div className="container-page flex h-11 items-center gap-1 overflow-x-auto text-sm [scrollbar-width:none]">
-        <Link
-          href="/search?sort=discount"
-          className="shrink-0 rounded-full px-3 py-1.5 font-semibold text-sale hover:bg-muted"
-        >
-          Deals
-        </Link>
-        {departments.map((d) => (
-          <Link
-            key={d.slug}
-            href={`/search?category=${d.slug}`}
-            aria-current={current === d.slug ? "page" : undefined}
-            className={cn(
-              "shrink-0 rounded-full px-3 py-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
-              current === d.slug && "bg-foreground text-background hover:bg-foreground hover:text-background",
-            )}
-          >
-            {d.name}
-          </Link>
-        ))}
-        <ShipToPicker compact className="ml-auto hidden shrink-0 text-xs md:flex lg:hidden" />
-      </div>
-    </nav>
   );
 }
 

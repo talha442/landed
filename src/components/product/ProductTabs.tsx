@@ -13,7 +13,7 @@ import { Stars } from "./ProductRating";
 export function ProductTabs({ product: p }: { product: Product }) {
   return (
     <Tabs defaultValue="overview" className="gap-6" id="details">
-      <TabsList variant="line" className="w-full justify-start gap-6 border-b p-0 group-data-horizontal/tabs:h-11">
+      <TabsList variant="line" className="w-full justify-start gap-5 overflow-x-auto border-b p-0 [scrollbar-width:none] group-data-horizontal/tabs:h-11 sm:gap-6">
         <TabsTrigger value="overview" className="flex-none px-0 pb-2 text-[15px]">Overview</TabsTrigger>
         <TabsTrigger value="specs" className="flex-none px-0 pb-2 text-[15px]">Specifications</TabsTrigger>
         <TabsTrigger value="reviews" className="flex-none px-0 pb-2 text-[15px]">
